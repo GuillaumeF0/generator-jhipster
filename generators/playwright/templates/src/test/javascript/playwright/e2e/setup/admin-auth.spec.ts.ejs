@@ -1,0 +1,26 @@
+import { expect, test as setup } from '@fixtures/test';
+import { adminAuthFile } from '@support/constants';
+
+setup('authenticate as admin', async ({ page, request }) => {
+  const authenticationUrl = process.env.AUTHENTICATION_URL!;
+  const username = process.env.LOGIN_ADMIN;
+  const password = process.env.PASSWORD_ADMIN;
+  const jwtStorageName = process.env.JWT_STORAGE_NAME;
+
+  const response = await request.post(authenticationUrl.toString(), {
+    data: {
+      username,
+      password,
+    },
+  });
+  expect(response.ok()).toBeTruthy();
+  const { id_token } = await response.json();
+  await page.goto('');
+  await page.evaluate(([key, token]) => localStorage.setItem(key, JSON.stringify(token)), [jwtStorageName, id_token]);
+
+  await page.context().storageState({ path: adminAuthFile });
+  process.env.JWT_TOKEN_ADMIN = id_token;
+
+  const validation = await request.get('/api/account', { headers: { Authorization: `Bearer ${id_token}` } });
+  expect(validation.status()).toEqual(200);
+});

@@ -1,0 +1,204 @@
+<%#
+ Copyright 2013-2026 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+import { expect, test as it } from '@fixtures/test';
+
+interface User {
+  id?: number;
+  login?: string;
+  email?: string;
+}
+
+it.describe('/admin', () => {
+  const token_admin = process.env.JWT_TOKEN_ADMIN!;
+  it.beforeEach(async ({ page }) => {
+    await page.goto('');
+  });
+
+<%_ if (generateUserManagement) { _%>
+  it.describe('/user-management', () => {
+    it('should load the page', async ({ navbarPage, administrationPage }) => {
+      navbarPage.getAdminMenuLocator().click();
+      navbarPage.getAdminMenuItemLocator('user-management').click();
+      await expect(administrationPage.getUserManagementPageHeadingLocator()).toBeVisible();
+    });
+    it.describe.skip('/user-management CRUD', () => {
+      const userManagementPageUrlPattern = new RegExp('/admin/user-management(\\?.*)?$');
+      const userManagementPageUrl = '/admin/user-management';
+      let user: User | undefined;
+
+      it.afterEach(async ({ request }) => {
+        if (user) {
+          const deleteUserResponse = await request.delete(`/api/admin/users/${user.id}`, {
+            headers: { Authorization: `Bearer ${token_admin}` },
+            ignoreHTTPSErrors: true,
+            failOnStatusCode: true,
+          });
+          expect(deleteUserResponse.ok()).toBeTruthy();
+        }
+      });
+
+      it.describe('with existing value', () => {
+        it.beforeEach(async ({ page, request }) => {
+          const userSample: User = {
+            login: `user${Math.floor(Math.random() * 1000000)}`,
+            email: `user${Math.floor(Math.random() * 1000000)}@example.com`,
+          };
+
+          const postUserResponse = await request.post(`/api/admin/users`, {
+            headers: { Authorization: `Bearer ${token_admin}` },
+            data: userSample,
+            ignoreHTTPSErrors: true,
+            failOnStatusCode: false,
+          });
+          expect([201, 500]).toContain(postUserResponse.status());
+
+          const getUserResponse = await request.get(`/api/admin/users/${userSample.login}`);
+
+          user = await getUserResponse.json();
+          await page.goto(userManagementPageUrl);
+        });
+
+        it('detail button click should load details User page', async ({ page, administrationPage }) => {
+          await page.getByRole('button', { name: 'View' }).last().click();
+          await expect(page.getByRole('heading')).toBeVisible();
+
+          const entitiesRequest = page.waitForResponse(
+            response => response.request().method() === 'GET' && response.url().endsWith('/api/admin/users+(?*|)'),
+          );
+
+          await page.getByRole('button', { name: 'Back' }).click();
+          expect((await entitiesRequest).status()).toEqual(200);
+          expect(page.url()).toMatch(userManagementPageUrlPattern);
+        });
+
+        it('edit button click should load edit User page and go back', async ({ page, administrationPage }) => {
+          await page.getByRole('button', { name: 'Edit' }).last().click();
+          await expect(page.getByRole('heading', { name: 'Create or edit a user' })).toBeVisible();
+          await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
+
+          const entitiesRequest = page.waitForResponse(
+            response => response.request().method() === 'GET' && response.url().endsWith('/api/admin/users+(?*|)'),
+          );
+
+          await page.getByRole('button', { name: 'Cancel' }).click();
+          expect((await entitiesRequest).status()).toEqual(200);
+          expect(page.url()).toMatch(userManagementPageUrlPattern);
+        });
+
+        it('edit button click should load edit User page and save', async ({ page }) => {
+          await page.getByRole('button', { name: 'Edit' }).last().click();
+          await expect(page.getByRole('heading', { name: 'Create or edit a user' })).toBeVisible();
+
+          const entitiesRequest = page.waitForResponse(
+            response => response.request().method() === 'GET' && response.url().endsWith('/api/admin/users+(?*|)'),
+          );
+
+          await page.getByRole('button', { name: 'Save' }).click();
+          expect((await entitiesRequest).status()).toEqual(200);
+          expect(page.url()).toMatch(userManagementPageUrlPattern);
+        });
+
+        it('last delete button click should delete instance of User', async ({ page }) => {
+          await page.getByRole('button', { name: 'Delete' }).last().click();
+          await expect(page.getByRole('heading', { name: 'Confirm delete operation' })).toBeVisible();
+
+          const deleteEntityRequest = page.waitForResponse(
+            response => response.request().method() === 'DELETE' && response.url().endsWith('/api/admin/users/*'),
+          );
+
+          const entitiesRequest = page.waitForResponse(
+            response => response.request().method() === 'GET' && response.url().endsWith('/api/admin/users+(?*|)'),
+          );
+
+          await page.getByRole('button', { name: 'Delete' }).last().click();
+          expect((await deleteEntityRequest).status()).toEqual(204);
+          expect((await entitiesRequest).status()).toEqual(200);
+          expect(page.url()).toMatch(userManagementPageUrlPattern);
+
+          user = undefined;
+        });
+      });
+    });
+  });
+<%_ } _%>
+
+<%_ if (withAdminUi) { _%>
+  it.describe('/metrics', () => {
+    it('should load the page', async ({ page, navbarPage }) => {
+      navbarPage.getAdminMenuLocator().click();
+      navbarPage.getAdminMenuItemLocator('metrics').click();
+      await expect(page.getByRole('heading', { name: 'Application Metrics' })).toBeVisible();
+    });
+  });
+
+  it.describe('/health', () => {
+    it('should load the page', async ({ page, navbarPage }) => {
+      navbarPage.getAdminMenuLocator().click();
+      navbarPage.getAdminMenuItemLocator('health').click();
+      await expect(page.getByRole('heading', { name: 'Health Checks' })).toBeVisible();
+    });
+  });
+
+  it.describe('/logs', () => {
+    it('should load the page', async ({ page, navbarPage }) => {
+      navbarPage.getAdminMenuLocator().click();
+      navbarPage.getAdminMenuItemLocator('logs').click();
+      await expect(page.getByRole('heading', { name: 'Logs' })).toBeVisible();
+    });
+  });
+
+  it.describe('/configuration', () => {
+    it('should load the page', async ({ page, navbarPage }) => {
+      navbarPage.getAdminMenuLocator().click();
+      navbarPage.getAdminMenuItemLocator('configuration').click();
+      await expect(page.getByRole('heading', { name: 'Configuration', exact: true })).toBeVisible();
+    });
+  });
+<%_ } _%>
+
+  it.describe('/docs', () => {
+    it('should load the page', async ({ page, navbarPage }) => {
+      const request = await page.request.get('/management/info', { headers: { Authorization: `Bearer ${token_admin}` } });
+      const info = await request.json();
+      if (info.activeProfiles.includes('api-docs')) {
+        navbarPage.getAdminMenuLocator().click();
+        navbarPage.getAdminMenuItemLocator('docs').click();
+        await expect(page.locator('iframe[title="Swagger UI"]')).toBeVisible();
+        // Wait iframe to load
+        await page.waitForTimeout(500);
+        const swaggerIframe = page.locator('iframe[title="Swagger UI"]').contentFrame().locator('body');
+        await expect(swaggerIframe).not.toBeEmpty();
+        await expect(swaggerIframe.locator('[id="swagger-ui"]')).toBeVisible({ timeout: 15000 });
+        await expect(swaggerIframe.locator('[id="select"] > option')).not.toHaveCount(0);
+        await expect(swaggerIframe.locator('[id="swagger-ui"]').locator('.information-container')).not.toHaveCount(0);
+      }
+    });
+  });
+<%_ if (communicationSpringWebsocket) { _%>
+
+  it.describe('/tracker', () => {
+    it('should load the page', async ({ page, navbarPage }) => {
+      navbarPage.getAdminMenuLocator().click();
+      navbarPage.getAdminMenuItemLocator('tracker').click();
+      await expect(page.locator('[data-cy="trackerPageHeading"]')).toBeVisible();
+      await expect(page.locator('[data-cy="trackerTable"] > tbody > tr')).toHaveCount(1);
+    });
+  });
+<%_ } _%>
+});

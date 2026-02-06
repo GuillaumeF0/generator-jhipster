@@ -1,0 +1,126 @@
+<%#
+ Copyright 2013-2026 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+import { expect, test as it } from '@fixtures/test';
+import { classInvalid, classValid } from '@support/constants';
+
+<% const registerPage = clientFrameworkVue ? '/register' : '/account/register'; _%>
+it.describe('<%= registerPage %>', () => {
+  it.beforeEach(async ({ page }) => {
+    await page.goto('<%= registerPage %>');
+  });
+
+  it('should be accessible through menu', async ({ page, navbarPage }) => {
+    await page.goto('');
+    await navbarPage.getAccountMenuLocator().click();
+    await navbarPage.getRegisterItemLocator().click();
+    await expect(page).toHaveURL(/<%= registerPage.replace(/\//g, '\\/') %>$/);
+  });
+
+  it('should load the register page', async ({ registerPage }) => {
+    await expect(registerPage.getSubmitRegisterLocator()).toBeVisible();
+  });
+
+  it('requires username', async ({ registerPage }) => {
+    <%_ if (clientFrameworkReact) { _%>
+    await registerPage.getSubmitRegisterLocator().click();
+    <%_ } _%>
+    await expect(registerPage.getUsernameRegisterLocator()).toContainClass(classInvalid);
+    await registerPage.getUsernameRegisterLocator().fill('test');
+    await registerPage.getUsernameRegisterLocator().blur();
+    await expect(registerPage.getUsernameRegisterLocator()).toContainClass(classValid);
+  });
+
+  it('should not accept invalid email', async ({ registerPage }) => {
+    <%_ if (clientFrameworkReact) { _%>
+    await registerPage.getSubmitRegisterLocator().click();
+    <%_ } _%>
+    await expect(registerPage.getEmailRegisterLocator()).toContainClass(classInvalid);
+    await registerPage.getEmailRegisterLocator().fill('testtest.fr');
+    await registerPage.getEmailRegisterLocator().blur();
+    await expect(registerPage.getEmailRegisterLocator()).toContainClass(classInvalid);
+  });
+
+  it('requires email in correct format', async ({ registerPage }) => {
+    <%_ if (clientFrameworkReact) { _%>
+    await registerPage.getSubmitRegisterLocator().click();
+    <%_ } _%>
+    await expect(registerPage.getEmailRegisterLocator()).toContainClass(classInvalid);
+    await registerPage.getEmailRegisterLocator().fill('test@test.fr');
+    await registerPage.getEmailRegisterLocator().blur();
+    await expect(registerPage.getEmailRegisterLocator()).toContainClass(classValid);
+  });
+
+  it('requires first password', async ({ registerPage }) => {
+    <%_ if (clientFrameworkReact) { _%>
+    await registerPage.getSubmitRegisterLocator().click();
+    <%_ } _%>
+    await expect(registerPage.getFirstPasswordRegisterLocator()).toContainClass(classInvalid);
+    await registerPage.getFirstPasswordRegisterLocator().fill('test@test.fr');
+    await registerPage.getFirstPasswordRegisterLocator().blur();
+    await expect(registerPage.getFirstPasswordRegisterLocator()).toContainClass(classValid);
+  });
+
+  it('requires password and confirm password to be same', async ({ registerPage }) => {
+    <%_ if (clientFrameworkReact) { _%>
+    await registerPage.getSubmitRegisterLocator().click();
+    <%_ } _%>
+    await expect(registerPage.getFirstPasswordRegisterLocator()).toContainClass(classInvalid);
+    await registerPage.getFirstPasswordRegisterLocator().fill('test');
+    await registerPage.getFirstPasswordRegisterLocator().blur();
+    await expect(registerPage.getFirstPasswordRegisterLocator()).toContainClass(classValid);
+    await expect(registerPage.getSecondPasswordRegisterLocator()).toContainClass(classInvalid);
+    await registerPage.getSecondPasswordRegisterLocator().fill('test');
+    await registerPage.getSecondPasswordRegisterLocator().blur();
+    await expect(registerPage.getSecondPasswordRegisterLocator()).toContainClass(classValid);
+  });
+
+  it('requires password and confirm password have not the same value', async ({ registerPage }) => {
+    <%_ if (clientFrameworkReact) { _%>
+    await registerPage.getSubmitRegisterLocator().click();
+    <%_ } _%>
+    await expect(registerPage.getFirstPasswordRegisterLocator()).toContainClass(classInvalid);
+    await registerPage.getFirstPasswordRegisterLocator().fill('test');
+    await registerPage.getFirstPasswordRegisterLocator().blur();
+    await expect(registerPage.getFirstPasswordRegisterLocator()).toContainClass(classValid);
+<%_ if (clientFrameworkAngular) { _%>
+    await expect(registerPage.getSecondPasswordRegisterLocator()).toContainClass(classInvalid);
+    await registerPage.getSecondPasswordRegisterLocator().fill('otherPassword');
+    await expect(registerPage.getSubmitRegisterLocator()).toBeDisabled();
+<%_ } else { _%>
+    await expect(registerPage.getSecondPasswordRegisterLocator()).toContainClass(classInvalid);
+    await registerPage.getSecondPasswordRegisterLocator().fill('otherPassword');
+    await registerPage.getSecondPasswordRegisterLocator().blur();
+    await expect(registerPage.getSecondPasswordRegisterLocator()).toContainClass(classInvalid);
+<%_ } _%>
+  });
+
+  it('register a valid user', async ({ page, registerPage }) => {
+    const randomEmail = '<%= faker.internet.email() %>';
+    const randomUsername = '<%= faker.internet.username() %>';
+    await registerPage.getUsernameRegisterLocator().fill(randomUsername);
+    await registerPage.getEmailRegisterLocator().fill(randomEmail);
+    await registerPage.getFirstPasswordRegisterLocator().fill('jondoe');
+    await registerPage.getSecondPasswordRegisterLocator().fill('jondoe');
+    const registerSaveResponse = page.waitForResponse(
+      response => response.request().method() === 'POST' && response.url().endsWith('/api/register'),
+    );
+    await registerPage.getSubmitRegisterLocator().click();
+    expect((await registerSaveResponse).status()).toEqual(201);
+  });
+});

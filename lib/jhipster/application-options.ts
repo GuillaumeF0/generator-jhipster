@@ -45,7 +45,7 @@ const { CAFFEINE, EHCACHE, HAZELCAST, INFINISPAN, MEMCACHED, REDIS } = cacheType
 
 const NO_CACHE_PROVIDER = cacheTypes.NO;
 
-const { CYPRESS, CUCUMBER, GATLING } = testFrameworkTypes;
+const { CYPRESS, PLAYWRIGHT, CUCUMBER, GATLING } = testFrameworkTypes;
 const { ANGULAR, REACT, VUE, SVELTE, NO } = clientFrameworkTypes;
 const { ELASTICSEARCH } = searchEngineTypes;
 
@@ -218,6 +218,7 @@ export const jhipsterOptionValues = {
   [optionNames.SKIP_USER_MANAGEMENT]: false,
   [optionNames.TEST_FRAMEWORKS]: {
     [CYPRESS]: CYPRESS,
+    [PLAYWRIGHT]: PLAYWRIGHT,
     [CUCUMBER]: CUCUMBER,
     [GATLING]: GATLING,
   },
@@ -245,8 +246,12 @@ export const jhipsterOptionTypes: Record<string, JDLApplicationOptionType> = {
   [optionNames.DATABASE_TYPE]: { type: ApplicationOptionTypes.STRING },
   [optionNames.DEV_DATABASE_TYPE]: { type: ApplicationOptionTypes.STRING },
   [optionNames.DTO_SUFFIX]: { type: ApplicationOptionTypes.STRING },
-  [optionNames.ENABLE_HIBERNATE_CACHE]: { type: ApplicationOptionTypes.BOOLEAN },
-  [optionNames.ENABLE_SWAGGER_CODEGEN]: { type: ApplicationOptionTypes.BOOLEAN },
+  [optionNames.ENABLE_HIBERNATE_CACHE]: {
+    type: ApplicationOptionTypes.BOOLEAN,
+  },
+  [optionNames.ENABLE_SWAGGER_CODEGEN]: {
+    type: ApplicationOptionTypes.BOOLEAN,
+  },
   [optionNames.ENABLE_TRANSLATION]: { type: ApplicationOptionTypes.BOOLEAN },
   [optionNames.ENTITY_SUFFIX]: { type: ApplicationOptionTypes.STRING },
   [optionNames.EXPERIMENTAL]: { type: ApplicationOptionTypes.BOOLEAN },
@@ -277,7 +282,9 @@ export const jhipsterOptionTypes: Record<string, JDLApplicationOptionType> = {
   [optionNames.TEST_FRAMEWORKS]: { type: ApplicationOptionTypes.LIST },
   [optionNames.WEBSOCKET]: { type: ApplicationOptionTypes.STRING },
   [optionNames.WITH_ADMIN_UI]: { type: ApplicationOptionTypes.BOOLEAN },
-  [optionNames.ENABLE_GRADLE_DEVELOCITY]: { type: ApplicationOptionTypes.BOOLEAN },
+  [optionNames.ENABLE_GRADLE_DEVELOCITY]: {
+    type: ApplicationOptionTypes.BOOLEAN,
+  },
   [optionNames.GRADLE_DEVELOCITY_HOST]: { type: ApplicationOptionTypes.STRING },
 };
 

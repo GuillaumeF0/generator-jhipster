@@ -24,7 +24,7 @@ import { ALPHANUMERIC_PATTERN } from '../../lib/constants/jdl.ts';
 import { APPLICATION_TYPE_GATEWAY, APPLICATION_TYPE_MICROSERVICE } from '../../lib/core/application-types.ts';
 import { clientFrameworkTypes, testFrameworkTypes } from '../../lib/jhipster/index.ts';
 
-const { CYPRESS } = testFrameworkTypes;
+const { CYPRESS, PLAYWRIGHT } = testFrameworkTypes;
 const { ANGULAR, REACT, VUE, NO: CLIENT_FRAMEWORK_NO } = clientFrameworkTypes;
 
 const microfrontendsToPromptValue = (answer: string | { baseName: string }[]) =>
@@ -166,7 +166,10 @@ const command = {
         message: 'Besides Jest/Vitest, which testing frameworks would you like to use?',
         default: () => intersection([CYPRESS], config.testFrameworks),
       }),
-      choices: [{ name: 'Cypress', value: CYPRESS }],
+      choices: [
+        { name: 'Cypress', value: CYPRESS },
+        { name: 'Playwright', value: PLAYWRIGHT },
+      ],
       scope: 'storage',
     },
     withAdminUi: {

@@ -1,0 +1,71 @@
+<%#
+ Copyright 2013-2026 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+import { test as base, expect } from '@playwright/test';
+import { AdministrationPage } from './administration-page';
+import { NavbarPage } from './navbar-page';
+import { LoginPage } from './login-page';
+import { RegisterPage } from './register-page';
+import { ResetPasswordPage } from './reset-password-page';
+import { SettingsPage } from './settings-page';
+
+export type TestFixture = {
+  navbarPage: NavbarPage;
+  loginPage: LoginPage;
+  registerPage: RegisterPage;
+  resetPasswordPage: ResetPasswordPage;
+  settingsPage: SettingsPage;
+  administrationPage: AdministrationPage;
+};
+
+export const test = base.extend<TestFixture>({
+  page: async ({ page }, use) => {
+    const errors: Array<Error> = [];
+    page.on('pageerror', error => {
+      errors.push(error);
+    });
+    await use(page);
+    expect(errors).toHaveLength(0);
+  },
+
+  navbarPage: async ({ page }, use) => {
+    await use(new NavbarPage(page));
+  },
+
+  loginPage: async ({ page }, use) => {
+    await use(new LoginPage(page));
+  },
+
+  registerPage: async ({ page }, use) => {
+    await use(new RegisterPage(page));
+  },
+
+  resetPasswordPage: async ({ page }, use) => {
+    await use(new ResetPasswordPage(page));
+  },
+
+  settingsPage: async ({ page }, use) => {
+    await use(new SettingsPage(page));
+  },
+
+  administrationPage: async ({ page }, use) => {
+    await use(new AdministrationPage(page));
+  },
+});
+
+export { expect } from '@playwright/test';

@@ -5,6 +5,8 @@
   "devDependencies": {
     "@cypress/code-coverage": "3.14.7",
     "@cypress/schematic": "5.0.0",
+    "@dotenvx/dotenvx": "^1.52.0",
+    "@playwright/test": "^1.58.1",
     "babel-loader": "10.0.0",
     "babel-plugin-istanbul": "7.0.1",
     "cypress": "15.10.0",

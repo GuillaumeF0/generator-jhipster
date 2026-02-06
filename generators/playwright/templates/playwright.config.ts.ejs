@@ -1,0 +1,178 @@
+<%#
+ Copyright 2013-2026 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+import { defineConfig, devices } from '@playwright/test';
+import { TestFixture } from './<%= playwrightDir %>fixtures/test';
+/**
+ * Read environment variables from file.
+ * https://dotenvx.com/
+ */
+import dotenvx from '@dotenvx/dotenvx';
+
+dotenvx.config({ path: "./<%= playwrightDir %>.env" });
+
+/**
+ * See https://playwright.dev/docs/test-configuration.
+ */
+export default defineConfig<TestFixture>({
+  testDir: './<%= playwrightDir %>e2e',
+  /* Run tests in files in parallel */
+  fullyParallel: true,
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  forbidOnly: !!process.env.CI,
+  /* Retry on CI only */
+  retries: process.env.CI ? 2 : 0,
+  /* Opt out of parallel tests on CI. */
+  workers: process.env.CI ? 1 : undefined,
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: 'html',
+
+  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  use: {
+    /* Base URL to use in actions like `await page.goto('/')`. */
+    baseURL: process.env.BASE_URL,
+
+    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    trace: 'on-first-retry',
+
+    screenshot: 'on-first-failure',
+
+    ignoreHTTPSErrors: true,
+  },
+
+  /* Configure projects for major browsers */
+  projects: [
+    {
+      name: 'setup auth user',
+      testMatch: 'e2e/setup/user-auth.spec.ts',
+    },
+
+    {
+      name: 'setup auth admin',
+      testMatch: 'e2e/setup/admin-auth.spec.ts',
+    },
+
+    {
+      name: 'chromium unauthenticated',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: /e2e\/.*\/(login|register|reset-password).*/,
+    },
+
+    {
+      name: 'firefox unauthenticated',
+      use: { ...devices['Desktop Firefox'] },
+      testMatch: /e2e\/.*\/(login|register|reset-password).*/,
+    },
+
+    {
+      name: 'webkit unauthenticated',
+      use: { ...devices['Desktop Safari'] },
+      testMatch: /e2e\/.*\/(login|register|reset-password).*/,
+    },
+
+    {
+      name: 'chromium authenticated as user',
+      use: { ...devices['Desktop Chrome'], storageState: 'playwright-artifacts/.auth/user.json' },
+      testMatch: /e2e\/.*\/(?!(login|register|reset-password|administration|settings|authority)).*/,
+      dependencies: ['setup auth user'],
+    },
+
+    {
+      name: 'chromium authenticated as admin',
+      use: { ...devices['Desktop Chrome'], storageState: 'playwright-artifacts/.auth/admin.json' },
+      testMatch: /e2e\/.*\/((administration|authority)).*/,
+      dependencies: ['setup auth admin'],
+    },
+
+    {
+      name: 'chromium authenticated both',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: /e2e\/.*\/((settings)).*/,
+      dependencies: ['setup auth user', 'setup auth admin'],
+    },
+
+    {
+      name: 'firefox authenticated as user',
+      use: { ...devices['Desktop Firefox'], storageState: 'playwright-artifacts/.auth/user.json' },
+      testMatch: /e2e\/.*\/(?!(login|register|reset-password|administration|settings|authority)).*/,
+      dependencies: ['setup auth user'],
+    },
+
+    {
+      name: 'firefox authenticated as admin',
+      use: { ...devices['Desktop Firefox'], storageState: 'playwright-artifacts/.auth/admin.json' },
+      testMatch: /e2e\/.*\/((administration|authority)).*/,
+      dependencies: ['setup auth admin'],
+    },
+
+    {
+      name: 'firefox authenticated both',
+      use: { ...devices['Desktop Firefox'] },
+      testMatch: /e2e\/.*\/((settings)).*/,
+      dependencies: ['setup auth user', 'setup auth admin'],
+    },
+
+    {
+      name: 'webkit authenticated as user',
+      use: { ...devices['Desktop Safari'], storageState: 'playwright-artifacts/.auth/user.json' },
+      testMatch: /e2e\/.*\/(?!(login|register|reset-password|administration|settings|authority)).*/,
+      dependencies: ['setup auth user'],
+    },
+
+    {
+      name: 'webkit authenticated as admin',
+      use: { ...devices['Desktop Safari'], storageState: 'playwright-artifacts/.auth/admin.json' },
+      testMatch: /e2e\/.*\/((administration|authority)).*/,
+      dependencies: ['setup auth admin'],
+    },
+
+    {
+      name: 'webkit authenticated both',
+      use: { ...devices['Desktop Safari'] },
+      testMatch: /e2e\/.*\/((settings)).*/,
+      dependencies: ['setup auth user', 'setup auth admin'],
+    },
+
+    /* Test against mobile viewports. */
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'] },
+    // },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: { ...devices['iPhone 12'] },
+    // },
+
+    /* Test against branded browsers. */
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    // },
+    // {
+    //   name: 'Google Chrome',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    // },
+  ],
+
+  /* Run your local dev server before starting the tests */
+  // webServer: {
+  //   command: 'npm run start',
+  //   url: 'http://localhost:4200',
+  //   reuseExistingServer: !process.env.CI,
+  // },
+});

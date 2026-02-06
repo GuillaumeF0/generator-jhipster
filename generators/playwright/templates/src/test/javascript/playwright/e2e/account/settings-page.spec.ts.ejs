@@ -1,0 +1,165 @@
+<%#
+ Copyright 2013-2026 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+import { expect, test as it } from '@fixtures/test';
+import type { Account } from '../../support/account';
+
+it.describe('/account/settings', () => {
+  it.use({ storageState: 'playwright-artifacts/.auth/user.json' });
+  const token_user = process.env.JWT_TOKEN_USER!;
+
+  const testUserEmail = 'user@localhost.fr';
+  let originalUserAccount: Account;
+  let testUserAccount: Account;
+
+  it.beforeAll(async ({ request }) => {
+    // get account
+    const getAccountResponse = await request.get('/api/account', {
+      headers: { Authorization: `Bearer ${token_user}` },
+      ignoreHTTPSErrors: true,
+      failOnStatusCode: true,
+    });
+    expect(getAccountResponse.status()).toEqual(200);
+
+    originalUserAccount = (await getAccountResponse.json()) as Account;
+    testUserAccount = { ...originalUserAccount, email: testUserEmail };
+
+    // save account
+    const saveAccountResponse = await request.post('/api/account', {
+      data: testUserAccount,
+      headers: { Authorization: `Bearer ${token_user}` },
+    });
+    expect(saveAccountResponse.status()).toEqual(200);
+  });
+
+  it.beforeEach(async ({ page, settingsPage }) => {
+    await page.goto('/account/settings');
+    await expect(settingsPage.getEmailSettingsLocator()).toHaveValue(testUserEmail);
+  });
+
+  it.afterEach(async ({ request }) => {
+    // save account
+    const saveAccountResponse = await request.post('/api/account', {
+      data: testUserAccount,
+      headers: { Authorization: `Bearer ${token_user}` },
+    });
+    expect(saveAccountResponse.status()).toEqual(200);
+  });
+
+  it.afterAll(async ({ request }) => {
+    // save account
+    const saveAccountResponse = await request.post('/api/account', {
+      data: originalUserAccount,
+      headers: { Authorization: `Bearer ${token_user}` },
+    });
+    expect(saveAccountResponse.status()).toEqual(200);
+  });
+
+  it('should be accessible through menu', async ({ page, navbarPage }) => {
+    await page.goto('');
+    await navbarPage.getAccountMenuLocator().click();
+    await navbarPage.getSettingsItemLocator().click();
+    await expect(page).toHaveURL(/\/account\/settings$/);
+  });
+
+  it("should be able to change 'user' firstname settings", async ({page, settingsPage }) => {
+    await settingsPage.getFirstNameSettingsLocator().clear();
+    await settingsPage.getFirstNameSettingsLocator().fill('jhipster');
+
+    const settingsSaveResponse = page.waitForResponse(
+      response => response.request().method() === 'POST' && response.url().endsWith('/api/account'),
+    );
+
+    await settingsPage.getSubmitSettingsLocator().click();
+    expect((await settingsSaveResponse).status()).toEqual(200);
+  });
+
+  it("should be able to change 'user' lastname settings", async ({page, settingsPage }) => {
+    await settingsPage.getLastNameSettingsLocator().clear();
+    await settingsPage.getFirstNameSettingsLocator().fill('jhipster');
+    await settingsPage.getLastNameSettingsLocator().fill('retspihj');
+
+    const settingsSaveResponse = page.waitForResponse(
+      response => response.request().method() === 'POST' && response.url().endsWith('/api/account'),
+    );
+
+    await settingsPage.getSubmitSettingsLocator().click();
+    expect((await settingsSaveResponse).status()).toEqual(200);
+  });
+
+  it("should be able to change 'user' email settings", async ({page, settingsPage }) => {
+    await settingsPage.getEmailSettingsLocator().clear();
+    await settingsPage.getFirstNameSettingsLocator().fill('jhipster');
+    await settingsPage.getEmailSettingsLocator().fill('user@localhost.fr');
+
+    const settingsSaveResponse = page.waitForResponse(
+      response => response.request().method() === 'POST' && response.url().endsWith('/api/account'),
+    );
+
+    await settingsPage.getSubmitSettingsLocator().click();
+    expect((await settingsSaveResponse).status()).toEqual(200);
+  });
+
+  it.describe('if there is another user with an email', () => {
+    let originalAdminAccount: Account;
+    const testAdminEmail = 'admin@localhost.fr';
+    const token_admin = process.env.JWT_TOKEN_ADMIN!;
+
+    it.beforeAll(async ({ request }) => {
+      // get account
+      const getAccountResponse = await request.get('/api/account', {
+        headers: { Authorization: `Bearer ${token_admin}` },
+        ignoreHTTPSErrors: true,
+        failOnStatusCode: true,
+      });
+      expect(getAccountResponse.status()).toEqual(200);
+
+      originalAdminAccount = (await getAccountResponse.json()) as Account;
+      const testAdminAccount = { ...originalAdminAccount, email: testAdminEmail };
+
+      // save account
+      const saveAccountResponse = await request.post('/api/account', {
+        data: testAdminAccount,
+        headers: { Authorization: `Bearer ${token_admin}` },
+      });
+      expect(saveAccountResponse.status()).toEqual(200);
+    });
+
+    it.afterAll(async ({ request }) => {
+      const saveAccountResponse = await request.post('/api/account', {
+        data: originalAdminAccount,
+        headers: { Authorization: `Bearer ${token_admin}` },
+      });
+      expect(saveAccountResponse.status()).toEqual(200);
+    });
+
+    it("should not be able to change 'user' email to same value", async ({page, settingsPage }) => {
+      await page.goto('/account/settings');
+      await settingsPage.getEmailSettingsLocator().clear();
+      await settingsPage.getFirstNameSettingsLocator().fill('jhipster');
+      await settingsPage.getEmailSettingsLocator().fill(testAdminEmail);
+
+      const settingsSaveResponse = page.waitForResponse(
+        response => response.request().method() === 'POST' && response.url().endsWith('/api/account'),
+      );
+
+      await settingsPage.getSubmitSettingsLocator().click();
+      expect((await settingsSaveResponse).status()).toEqual(400);
+    });
+  });
+});

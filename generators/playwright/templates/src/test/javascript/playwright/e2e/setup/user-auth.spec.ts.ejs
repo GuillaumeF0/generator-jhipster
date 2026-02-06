@@ -1,0 +1,26 @@
+import { expect, test as setup } from '@fixtures/test';
+import { userAuthFile } from '@support/constants';
+
+setup('authenticate as user', async ({ page, request }) => {
+  const authenticationUrl = process.env.AUTHENTICATION_URL!;
+  const username = process.env.LOGIN_USER;
+  const password = process.env.PASSWORD_USER;
+  const jwtStorageName = process.env.JWT_STORAGE_NAME;
+
+  const response = await request.post(authenticationUrl.toString(), {
+    data: {
+      username,
+      password,
+    },
+  });
+  expect(response.ok()).toBeTruthy();
+  const { id_token } = await response.json();
+  await page.goto('');
+  await page.evaluate(([key, token]) => localStorage.setItem(key, JSON.stringify(token)), [jwtStorageName, id_token]);
+
+  await page.context().storageState({ path: userAuthFile });
+  process.env.JWT_TOKEN_USER = id_token;
+
+  const validation = await request.get('/api/account', { headers: { Authorization: `Bearer ${id_token}` } });
+  expect(validation.status()).toEqual(200);
+});
