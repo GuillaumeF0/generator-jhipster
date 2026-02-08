@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2025 the original author or authors from the JHipster project.
+ * Copyright 2013-2026 the original author or authors from the JHipster project.
  *
  * This file is part of the JHipster project, see https://www.jhipster.tech/
  * for more information.
@@ -18,14 +18,14 @@
  */
 import { asWriteFilesSection } from '../base-application/support/task-type-inference.ts';
 import { clientRootTemplatesBlock } from '../client/support/index.ts';
-import { CLIENT_TEST_SRC_DIR } from '../generator-constants.js';
+import { CLIENT_TEST_SRC_DIR } from '../generator-constants.ts';
 
 const PLAYWRIGHT_TEMPLATE_SOURCE_DIR = `${CLIENT_TEST_SRC_DIR}playwright/`;
 
 export const playwrightFiles = asWriteFilesSection({
   common: [
     {
-      templates: ['.gitignore.jhi.playwright.ejs', 'README.md.jhi.playwright'],
+      templates: ['.gitignore.jhi.playwright', 'README.md.jhi.playwright'],
     },
     clientRootTemplatesBlock({
       templates: ['playwright.config.ts'],
@@ -87,6 +87,28 @@ export const playwrightFiles = asWriteFilesSection({
       templates: ['support/oauth2.ts'],
     },
   ],
+  /*
+  audit: [
+    {
+      condition: generator => generator.playwrightAudit,
+      path: PLAYWRIGHT_TEMPLATE_SOURCE_DIR,
+      renameTo: (ctx, file) => `${ctx.playwrightDir}${file}`,
+      templates: ['e2e/lighthouse.audits.ts'],
+    },
+    clientRootTemplatesBlock({
+      condition: generator => generator.playwrightAudit,
+      templates: ['playwright-audits.config.ts'],
+    }),
+  ],
+  coverage: [
+    {
+      condition: generator => generator.playwrightCoverage,
+      path: PLAYWRIGHT_TEMPLATE_SOURCE_DIR,
+      renameTo: (ctx, file) => `${ctx.playwrightDir}${file}`,
+      templates: ['plugins/global.d.ts'],
+    },
+  ],
+  */
 });
 
 export const playwrightEntityFiles = asWriteFilesSection({
