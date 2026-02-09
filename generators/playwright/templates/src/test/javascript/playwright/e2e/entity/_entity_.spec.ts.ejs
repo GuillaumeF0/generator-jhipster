@@ -149,14 +149,14 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
     );
     await page.getByRole('link', { name: '<%- adminEntity ? 'Administration' : 'Entities' %>' }).click();
-    await page.getByRole('link', { name: '<%- entityNameCapitalized %>' }).click();
+    await page.getByRole('link', { name: '<%- entityNameHumanized %>' }).click();
     const entities = await (await entitiesRequest).json();
     if (entities?.length === 0) {
       await expect(page.locator('[data-cy="entityTable"]')).not.toBeVisible();
     } else {
       expect(await page.locator('[data-cy="entityTable"]').count()).toBeGreaterThan(0);
     }
-    await expect(page.getByRole('heading', { name: '<%- entityNamePlural %>' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '<%- entityNamePluralHumanized %>' })).toBeVisible();
     expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
   });
 
@@ -172,8 +172,8 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       });
 
       it('should load create <%- entityNameCapitalized %> page', async ({ page }) => {
-        await page.getByRole('button', { name: 'Create a new <%- entityNameCapitalized %>' }).click();
-        await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameCapitalized %>' })).toBeVisible();
+        await page.getByRole('button', { name: 'Create a new <%- entityNameHumanized %>' }).click();
+        await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameHumanized %>' })).toBeVisible();
         await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
         expect(page.url()).toMatch(new RegExp('.*/<%= entityPage %>/new$'));
 
@@ -237,17 +237,27 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
         });
       });
       */
+      it.beforeEach(async ({ page }) => {
+        const entitiesRequest = page.waitForResponse(
+          response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
+        );
+        await page.goto(<%= entityInstance %>PageUrl);
+        const entities = await (await entitiesRequest).json();
+        if (entities?.length === 0) {
+          it.skip();
+        }
+      });
 <%_ } _%>
 
       it('detail button click should load details <%- entityNameCapitalized %> page', async ({ page }) => {
         await page.locator('[data-cy="entityDetailsButton"]').first().click();
-        await expect(page.getByRole('heading', { name: '<%- entityNamePlural %>' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: '<%- entityNamePluralHumanized %>' })).toBeVisible();
 
         const entitiesRequest = page.waitForResponse(
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
-        await page.getByRole('button', { name: 'Back' }).click();
+        await page.getByRole('button', { name: 'Cancel' }).click();
 
         expect((await entitiesRequest).ok()).toBeTruthy();
         expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
@@ -256,7 +266,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
 <%_ if (!readOnly && updatableEntity) { _%>
       it('edit button click should load edit <%- entityNameCapitalized %> page and go back', async ({ page }) => {
         await page.locator('[data-cy="entityEditButton"]').first().click();
-        await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameCapitalized %>' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameHumanized %>' })).toBeVisible();
         await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
         
         const entitiesRequest = page.waitForResponse(
@@ -271,7 +281,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       <% if (jpaMetamodelFiltering && clientFrameworkVue && requiredRelationships.length) { %>// Reason: jpaMetamodelFiltering with required relationship missbehavior<% } %>
       it<% if (jpaMetamodelFiltering && clientFrameworkVue && requiredRelationships.length) { %>.skip<% } %>('edit button click should load edit <%- entityNameCapitalized %> page and save', async ({ page }) => {
         await page.locator('[data-cy="entityEditButton"]').first().click();
-        await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameCapitalized %>' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameHumanized %>' })).toBeVisible();
        
         const entitiesRequest = page.waitForResponse(
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
@@ -321,8 +331,8 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
   it.describe('new <%- entityNameCapitalized %> page', () => {
     it.beforeEach(async ({ page }) => {
       await page.goto(<%= entityInstance %>PageUrl);
-      await page.getByRole('button', { name: 'Create a new <%- entityNameCapitalized %>' }).click();
-      await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameCapitalized %>' })).toBeVisible();
+      await page.getByRole('button', { name: 'Create a new <%- entityNameHumanized %>' }).click();
+      await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameHumanized %>' })).toBeVisible();
     });
 
     <% if (skipCreateTest) { %>// Reason: cannot create a required entity with relationship with required relationships.<% } %>
