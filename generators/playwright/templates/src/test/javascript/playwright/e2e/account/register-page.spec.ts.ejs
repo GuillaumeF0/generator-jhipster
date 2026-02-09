@@ -25,10 +25,10 @@ it.describe('<%= registerPage %>', () => {
     await page.goto('<%= registerPage %>');
   });
 
-  it('should be accessible through menu', async ({ page, navbarPage }) => {
+  it('should be accessible through menu', async ({ page, navbar }) => {
     await page.goto('');
-    await navbarPage.getAccountMenuLocator().click();
-    await navbarPage.getRegisterItemLocator().click();
+    await navbar.getAccountMenuLocator().click();
+    await navbar.getRegisterItemLocator().click();
     await expect(page).toHaveURL(/<%= registerPage.replace(/\//g, '\\/') %>$/);
   });
 
@@ -117,10 +117,10 @@ it.describe('<%= registerPage %>', () => {
     await registerPage.getEmailRegisterLocator().fill(randomEmail);
     await registerPage.getFirstPasswordRegisterLocator().fill('jondoe');
     await registerPage.getSecondPasswordRegisterLocator().fill('jondoe');
-    const registerSaveResponse = page.waitForResponse(
+    const registerSaveRequest = page.waitForResponse(
       response => response.request().method() === 'POST' && response.url().endsWith('/api/register'),
     );
     await registerPage.getSubmitRegisterLocator().click();
-    expect((await registerSaveResponse).status()).toEqual(201);
+    expect((await registerSaveRequest).status()).toEqual(201);
   });
 });

@@ -18,7 +18,7 @@
 -%>
 import { Locator, Page } from '@playwright/test';
 
-export class NavbarPage {
+export class Navbar {
   constructor(public readonly page: Page) {}
 
   getAccountMenuLocator(): Locator {
@@ -26,27 +26,27 @@ export class NavbarPage {
   }
 
   getLoginItemLocator(): Locator {
-    return this.page.locator('[data-cy="login"]');
+    return this.page.locator('#login');
   }
 
   getLogoutItemLocator(): Locator {
-    return this.page.locator('[data-cy="logout"]');
+    return this.page.locator('#logout');
   }
 
   getRegisterItemLocator(): Locator {
-    return this.page.locator('[data-cy="register"]');
+    return this.page.getByRole('link', { name: 'Register', exact: true });
   }
 
   getSettingsItemLocator(): Locator {
-    return this.page.locator('[data-cy="settings"]');
+    return this.page.getByRole('link', { name: 'Settings', exact: true });
   }
 
   getPasswordItemLocator(): Locator {
-    return this.page.getByRole('link', { name: 'Password' });
+    return this.page.getByRole('link', { name: 'Password', exact: true });
   }
 
   getAdminMenuLocator(): Locator {
-    return this.page.locator('[data-cy="adminMenu"]');
+    return this.page.getByRole('link', { name: 'Administration' });
   }
 
   getAdminMenuItemLocator(item: string): Locator {

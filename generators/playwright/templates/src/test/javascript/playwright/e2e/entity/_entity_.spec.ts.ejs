@@ -142,20 +142,19 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
     cy.clickOnEntityMenuItem('<%= entityPage %>');
     cy.wait('@entitiesRequest').then(({ response }) => {
       if (response?.body.length === 0) {
-        await expect(registerPage.getEntityTableLocator()).should('not.exist');
+        await expect(page.getEntityTableLocator()).not.toBeVisible();
       } else {
-        await expect(registerPage.getEntityTableLocator()).should('exist');
+        await expect(page.getEntityTableLocator()).toBeVisible();
       }
     });;
-    cy.getEntityHeading('<%- entityNameCapitalized %>').should('exist');
+    cy.getEntityHeading('<%- entityNameCapitalized %>').toBeVisible();
     cy.url().should('match', <%= entityInstance %>PageUrlPattern);
     */
     //
-    await page.getByRole('link', { name: '<%- adminEntity ? 'Administration' : 'Entities' %>' }).click();
-    await page.getByRole('link', { name: '<%- entityNameCapitalized %>' }).click();
     const entitiesRequest = page.waitForResponse(
       response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
     );
+    await page.getByRole('link', { name: '<%- adminEntity ? 'Administration' : 'Entities' %>' }).click();
     await page.getByRole('link', { name: '<%- entityNameCapitalized %>' }).click();
     const entities = await (await entitiesRequest).json();
     if (entities?.length === 0) {
@@ -264,13 +263,13 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       it('edit button click should load edit <%- entityNameCapitalized %> page and go back', async ({ page }) => {
         await page.locator('[data-cy="entityEditButton"]').first().click();
         await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameCapitalized %>' })).toBeVisible();
-        await expect(registerPage.getEntityCreateSaveButtonLocator()).should('exist');
+        await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
         
         const entitiesRequest = page.waitForResponse(
           response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
         );
         
-        await registerPage.getEntityCreateCancelButtonLocator().click();
+        await page.getByRole('button', { name: 'Back' }).click();
         expect((await entitiesRequest).status()).toEqual(200);
         expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
       });
@@ -294,7 +293,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       <% if (skipCreateTest) { %>// Reason: cannot create a required entity with relationship with required relationships.<% } %>
       it<%= skipCreateTest %>('last delete button click should delete instance of <%- entityNameCapitalized %>', async ({ page }) => {
   <%_ if (clientFrameworkReact) { _%>
-        const dialogDeleteResponse = page.waitForResponse(
+        const dialogDeleteRequest = page.waitForResponse(
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>/'),
         );
   <%_ } _%>

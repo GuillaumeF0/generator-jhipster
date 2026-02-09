@@ -22,10 +22,10 @@ it.describe('login page', () => {
   const username = process.env['LOGIN_USER'] ?? '<%= skipUserManagement && (applicationTypeMonolith || applicationTypeGateway) ? 'admin' : 'user' %>';
   const password = process.env['PASSWORD_USER'] ?? '<%= skipUserManagement && (applicationTypeMonolith || applicationTypeGateway) ? 'admin' : 'user' %>';
 
-  it.beforeEach(async ({ page, navbarPage }) => {
+  it.beforeEach(async ({ page, navbar }) => {
     await page.goto('');
-    await navbarPage.getAccountMenuLocator().click();
-    await navbarPage.getLoginItemLocator().click();
+    await navbar.getAccountMenuLocator().click();
+    await navbar.getLoginItemLocator().click();
   });
 
   it('greets with signin', async ({ loginPage }) => {
@@ -40,7 +40,7 @@ it.describe('login page', () => {
 <%_ } _%>
 
   it('requires username', async ({ page, loginPage }) => {
-    const authenticateResponse = page.waitForResponse(
+    const authenticateRequest = page.waitForResponse(
       response => response.request().method() === 'POST' && response.url().endsWith('/api/<% if (authenticationTypeSession) { %>authentication<% } else { %>authenticate<% } %>'),
     );
 
@@ -48,21 +48,21 @@ it.describe('login page', () => {
     await loginPage.getPasswordLoginLocator().fill('a-password');
     await loginPage.getSubmitLoginLocator().click();
 <%_ if (!clientFrameworkReact) { _%>
-    expect((await authenticateResponse).status()).toEqual(<% if (authenticationTypeSession) { %>401<% } else { %>400<% } %>);
+    expect((await authenticateRequest).status()).toEqual(<% if (authenticationTypeSession) { %>401<% } else { %>400<% } %>);
 <%_ } _%>
     // login page should stay open when login fails
     await expect(loginPage.getTitleLoginLocator()).toBeVisible();
   });
 
   it('requires password', async ({ page, loginPage }) => {
-    const authenticateResponse = page.waitForResponse(
+    const authenticateRequest = page.waitForResponse(
       response => response.request().method() === 'POST' && response.url().endsWith('/api/<% if (authenticationTypeSession) { %>authentication<% } else { %>authenticate<% } %>'),
     );
     await expect(loginPage.getUsernameLoginLocator()).toBeVisible();
     await loginPage.getUsernameLoginLocator().fill('a-login');
     await loginPage.getSubmitLoginLocator().click();
 <%_ if (!clientFrameworkReact) { _%>
-    expect((await authenticateResponse).status()).toEqual(<% if (authenticationTypeSession) { %>401<% } else { %>400<% } %>);
+    expect((await authenticateRequest).status()).toEqual(<% if (authenticationTypeSession) { %>401<% } else { %>400<% } %>);
     await expect(loginPage.getErrorLoginLocator()).toBeVisible();
 <%_ } else { _%>
     // login page should stay open when login fails
@@ -71,7 +71,7 @@ it.describe('login page', () => {
   });
 
   it('errors when password is incorrect', async ({ page, loginPage }) => {
-    const authenticateResponse = page.waitForResponse(
+    const authenticateRequest = page.waitForResponse(
       response => response.request().method() === 'POST' && response.url().endsWith('/api/<% if (authenticationTypeSession) { %>authentication<% } else { %>authenticate<% } %>'),
     );
     await expect(loginPage.getUsernameLoginLocator()).toBeVisible();
@@ -79,12 +79,12 @@ it.describe('login page', () => {
     await expect(loginPage.getPasswordLoginLocator()).toBeVisible();
     await loginPage.getPasswordLoginLocator().fill('bad-password');
     await loginPage.getSubmitLoginLocator().click();
-    expect((await authenticateResponse).status()).toEqual(401);
+    expect((await authenticateRequest).status()).toEqual(401);
     await expect(loginPage.getErrorLoginLocator()).toBeVisible();
   });
 
   it('go to home page when successfully logs in', async ({ page, loginPage }) => {
-    const authenticateResponse = page.waitForResponse(
+    const authenticateRequest = page.waitForResponse(
       response => response.request().method() === 'POST' && response.url().endsWith('/api/<% if (authenticationTypeSession) { %>authentication<% } else { %>authenticate<% } %>'),
     );
     await expect(loginPage.getUsernameLoginLocator()).toBeVisible();
@@ -92,7 +92,7 @@ it.describe('login page', () => {
     await expect(loginPage.getPasswordLoginLocator()).toBeVisible();
     await loginPage.getPasswordLoginLocator().fill(password);
     await loginPage.getSubmitLoginLocator().click();
-    expect((await authenticateResponse).status()).toEqual(200);
+    expect((await authenticateRequest).status()).toEqual(200);
     await expect(page).toHaveURL(url => new URL(url).hash === '');
   });
 });

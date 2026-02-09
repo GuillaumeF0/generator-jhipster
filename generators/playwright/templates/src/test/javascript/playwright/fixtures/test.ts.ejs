@@ -18,14 +18,14 @@
 -%>
 import { test as base, expect } from '@playwright/test';
 import { AdministrationPage } from './administration-page';
-import { NavbarPage } from './navbar-page';
+import { Navbar } from './navbar';
 import { LoginPage } from './login-page';
 import { RegisterPage } from './register-page';
 import { ResetPasswordPage } from './reset-password-page';
 import { SettingsPage } from './settings-page';
 
 export type TestFixture = {
-  navbarPage: NavbarPage;
+  navbar: Navbar;
   loginPage: LoginPage;
   registerPage: RegisterPage;
   resetPasswordPage: ResetPasswordPage;
@@ -43,8 +43,8 @@ export const test = base.extend<TestFixture>({
     expect(errors).toHaveLength(0);
   },
 
-  navbarPage: async ({ page }, use) => {
-    await use(new NavbarPage(page));
+  navbar: async ({ page }, use) => {
+    await use(new Navbar(page));
   },
 
   loginPage: async ({ page }, use) => {

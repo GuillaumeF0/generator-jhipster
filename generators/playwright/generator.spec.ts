@@ -142,7 +142,10 @@ describe(`generator - ${generator}`, () => {
             assertion(
               `${playwrightAdminRoot}playwright/support/constants.ts`,
               "export const userAuthFile = 'playwright-artifacts/.auth/user.json';\n" +
-                "export const adminAuthFile = 'playwright-artifacts/.auth/admin.json';\n",
+                "export const adminAuthFile = 'playwright-artifacts/.auth/admin.json';\n" +
+                '\n' +
+                "export const classValid = 'ng-valid';\n" +
+                "export const classInvalid = 'ng-invalid';",
             );
           });
         }

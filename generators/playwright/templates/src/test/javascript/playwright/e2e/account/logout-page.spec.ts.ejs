@@ -19,21 +19,21 @@
 import { expect, test as it } from '@fixtures/test';
 
 it.describe('logout', () => {
-  it('go to home page when successfully logs out', async ({ page, navbarPage }) => {
+  it('go to home page when successfully logs out', async ({ page, navbar }) => {
     await page.goto('');
 
 <%_ if (authenticationUsesCsrf) { _%>
-    const logoutResponse = page.waitForResponse(
+    const logoutRequest = page.waitForResponse(
       response => response.request().method() === 'POST' && response.url().endsWith('/api/logout'),
     );
 <%_ } _%>
-    await navbarPage.getAccountMenuLocator().click();
-    await navbarPage.getLogoutItemLocator().click();
+    await navbar.getAccountMenuLocator().click();
+    await navbar.getLogoutItemLocator().click();
 
 <%_ if (authenticationUsesCsrf) { _%>
-    expect((await logoutResponse).status()).toEqual(200);
+    expect((await logoutRequest).status()).toEqual(200);
 <%_ } _%>
-    await navbarPage.getAccountMenuLocator().click();
-    await expect(navbarPage.getLoginItemLocator()).toBeVisible();
+    await navbar.getAccountMenuLocator().click();
+    await expect(navbar.getLoginItemLocator()).toBeVisible();
   });
 });

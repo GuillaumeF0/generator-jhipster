@@ -32,9 +32,9 @@ it.describe('/admin', () => {
 
 <%_ if (generateUserManagement) { _%>
   it.describe('/user-management', () => {
-    it('should load the page', async ({ navbarPage, administrationPage }) => {
-      navbarPage.getAdminMenuLocator().click();
-      navbarPage.getAdminMenuItemLocator('user-management').click();
+    it('should load the page', async ({ navbar, administrationPage }) => {
+      navbar.getAdminMenuLocator().click();
+      navbar.getAdminMenuItemLocator('user-management').click();
       await expect(administrationPage.getUserManagementPageHeadingLocator()).toBeVisible();
     });
     it.describe.skip('/user-management CRUD', () => {
@@ -44,12 +44,12 @@ it.describe('/admin', () => {
 
       it.afterEach(async ({ request }) => {
         if (user) {
-          const deleteUserResponse = await request.delete(`/api/admin/users/${user.id}`, {
+          const deleteUserRequest = await request.delete(`/api/admin/users/${user.id}`, {
             headers: { Authorization: `Bearer ${token_admin}` },
             ignoreHTTPSErrors: true,
             failOnStatusCode: true,
           });
-          expect(deleteUserResponse.ok()).toBeTruthy();
+          expect(deleteUserRequest.ok()).toBeTruthy();
         }
       });
 
@@ -60,21 +60,21 @@ it.describe('/admin', () => {
             email: `user${Math.floor(Math.random() * 1000000)}@example.com`,
           };
 
-          const postUserResponse = await request.post(`/api/admin/users`, {
+          const postUserRequest = await request.post(`/api/admin/users`, {
             headers: { Authorization: `Bearer ${token_admin}` },
             data: userSample,
             ignoreHTTPSErrors: true,
             failOnStatusCode: false,
           });
-          expect([201, 500]).toContain(postUserResponse.status());
+          expect([201, 500]).toContain(postUserRequest.status());
 
-          const getUserResponse = await request.get(`/api/admin/users/${userSample.login}`);
+          const getUserRequest = await request.get(`/api/admin/users/${userSample.login}`);
 
-          user = await getUserResponse.json();
+          user = await getUserRequest.json();
           await page.goto(userManagementPageUrl);
         });
 
-        it('detail button click should load details User page', async ({ page, administrationPage }) => {
+        it('detail button click should load details User page', async ({ page }) => {
           await page.getByRole('button', { name: 'View' }).last().click();
           await expect(page.getByRole('heading')).toBeVisible();
 
@@ -87,7 +87,7 @@ it.describe('/admin', () => {
           expect(page.url()).toMatch(userManagementPageUrlPattern);
         });
 
-        it('edit button click should load edit User page and go back', async ({ page, administrationPage }) => {
+        it('edit button click should load edit User page and go back', async ({ page }) => {
           await page.getByRole('button', { name: 'Edit' }).last().click();
           await expect(page.getByRole('heading', { name: 'Create or edit a user' })).toBeVisible();
           await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
@@ -140,45 +140,45 @@ it.describe('/admin', () => {
 
 <%_ if (withAdminUi) { _%>
   it.describe('/metrics', () => {
-    it('should load the page', async ({ page, navbarPage }) => {
-      navbarPage.getAdminMenuLocator().click();
-      navbarPage.getAdminMenuItemLocator('metrics').click();
+    it('should load the page', async ({ page, navbar }) => {
+      navbar.getAdminMenuLocator().click();
+      navbar.getAdminMenuItemLocator('metrics').click();
       await expect(page.getByRole('heading', { name: 'Application Metrics' })).toBeVisible();
     });
   });
 
   it.describe('/health', () => {
-    it('should load the page', async ({ page, navbarPage }) => {
-      navbarPage.getAdminMenuLocator().click();
-      navbarPage.getAdminMenuItemLocator('health').click();
+    it('should load the page', async ({ page, navbar }) => {
+      navbar.getAdminMenuLocator().click();
+      navbar.getAdminMenuItemLocator('health').click();
       await expect(page.getByRole('heading', { name: 'Health Checks' })).toBeVisible();
     });
   });
 
   it.describe('/logs', () => {
-    it('should load the page', async ({ page, navbarPage }) => {
-      navbarPage.getAdminMenuLocator().click();
-      navbarPage.getAdminMenuItemLocator('logs').click();
+    it('should load the page', async ({ page, navbar }) => {
+      navbar.getAdminMenuLocator().click();
+      navbar.getAdminMenuItemLocator('logs').click();
       await expect(page.getByRole('heading', { name: 'Logs' })).toBeVisible();
     });
   });
 
   it.describe('/configuration', () => {
-    it('should load the page', async ({ page, navbarPage }) => {
-      navbarPage.getAdminMenuLocator().click();
-      navbarPage.getAdminMenuItemLocator('configuration').click();
+    it('should load the page', async ({ page, navbar }) => {
+      navbar.getAdminMenuLocator().click();
+      navbar.getAdminMenuItemLocator('configuration').click();
       await expect(page.getByRole('heading', { name: 'Configuration', exact: true })).toBeVisible();
     });
   });
 <%_ } _%>
 
   it.describe('/docs', () => {
-    it('should load the page', async ({ page, navbarPage }) => {
+    it('should load the page', async ({ page, navbar }) => {
       const request = await page.request.get('/management/info', { headers: { Authorization: `Bearer ${token_admin}` } });
       const info = await request.json();
       if (info.activeProfiles.includes('api-docs')) {
-        navbarPage.getAdminMenuLocator().click();
-        navbarPage.getAdminMenuItemLocator('docs').click();
+        navbar.getAdminMenuLocator().click();
+        navbar.getAdminMenuItemLocator('docs').click();
         await expect(page.locator('iframe[title="Swagger UI"]')).toBeVisible();
         // Wait iframe to load
         await page.waitForTimeout(500);
@@ -193,9 +193,9 @@ it.describe('/admin', () => {
 <%_ if (communicationSpringWebsocket) { _%>
 
   it.describe('/tracker', () => {
-    it('should load the page', async ({ page, navbarPage }) => {
-      navbarPage.getAdminMenuLocator().click();
-      navbarPage.getAdminMenuItemLocator('tracker').click();
+    it('should load the page', async ({ page, navbar }) => {
+      navbar.getAdminMenuLocator().click();
+      navbar.getAdminMenuItemLocator('tracker').click();
       await expect(page.locator('[data-cy="trackerPageHeading"]')).toBeVisible();
       await expect(page.locator('[data-cy="trackerTable"] > tbody > tr')).toHaveCount(1);
     });
