@@ -213,7 +213,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
             && response.headers().link === '<http://localhost/<%= baseApi + entityApiUrl %>?page=0&size=20>; rel="last",<http://localhost/<%= baseApi + entityApiUrl %>?page=0&size=20>; rel="first"',
   <%_ } _%>
         );
-        <%= entityInstance %> = await postEntityRequest.json();
+        <%= entityInstance %> = await (await postEntityRequest).json();
         await page.goto(<%= entityInstance %>PageUrl);
         const entitiesResponse = await entitiesRequest;
         expect(entitiesResponse.status()).toEqual(200);
@@ -257,7 +257,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
-        await page.getByRole('button', { name: 'Cancel' }).click();
+        await page.getByRole('button', { name: 'Back' }).click();
 
         expect((await entitiesRequest).ok()).toBeTruthy();
         expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
@@ -273,7 +273,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
         
-        await page.getByRole('button', { name: 'Back' }).click();
+        await page.getByRole('button', { name: 'Cancel' }).click();
         expect((await entitiesRequest).status()).toEqual(200);
         expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
       });
@@ -359,7 +359,11 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       */
 
     <%_ } else if (fieldIsEnum) { _%>
-      await page.locator(`[data-cy="<%= fieldName %>"]`).select('<%- fieldValue %>');
+      <%_ if (field.fieldTypeNumeric) { _%>
+        await page.locator(`[data-cy="<%= fieldName %>"]`).selectOption({ index: <%- fieldValue %> });
+      <%_ } else { _%>
+        await page.locator(`[data-cy="<%= fieldName %>"]`).selectOption('<%- fieldValue %>');
+      <%_ } _%>
 
     <%_ } else if (field.fieldTypeString || field.fieldTypeNumeric || field.fieldTypeLocalDate || field.fieldTypeTimed || field.fieldTypeDuration) { _%>
       await page.locator(`[data-cy="<%= fieldName %>"]`).fill('<%- fieldValue %>');
