@@ -22,23 +22,23 @@ export class AdministrationPage {
   constructor(public readonly page: Page) {}
 
   getConfigurationPageHeadingLocator(): Locator {
-    return this.page.locator('[data-cy="configurationPageHeading"]');
+    return this.page.locator('#configurationPageHeading');
   }
 
   getLogsPageHeadingLocator(): Locator {
-    return this.page.locator('[data-cy="logsPageHeading"]');
+    return this.page.locator('#logsPageHeading');
   }
 
   getHealthPageHeadingLocator(): Locator {
-    return this.page.locator('[data-cy="healthPageHeading"]');
+    return this.page.locator('#healthPageHeading');
   }
 
   getMetricsPageHeadingLocator(): Locator {
-    return this.page.locator('[data-cy="metricsPageHeading"]');
+    return this.page.locator('#metricsPageHeading');
   }
 
   getUserManagementPageHeadingLocator(): Locator {
-    return this.page.locator('[data-cy="userManagementPageHeading"]');
+    return this.page.locator('#user-management-page-heading');
   }
 
   getSwaggerFrameLocator(): Locator {

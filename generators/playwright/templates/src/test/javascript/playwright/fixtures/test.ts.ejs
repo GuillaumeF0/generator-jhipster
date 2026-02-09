@@ -23,10 +23,12 @@ import { LoginPage } from './login-page';
 import { RegisterPage } from './register-page';
 import { ResetPasswordPage } from './reset-password-page';
 import { SettingsPage } from './settings-page';
+import { PasswordPage } from './password-page';
 
 export type TestFixture = {
   navbar: Navbar;
   loginPage: LoginPage;
+  passwordPage: PasswordPage;
   registerPage: RegisterPage;
   resetPasswordPage: ResetPasswordPage;
   settingsPage: SettingsPage;
@@ -53,6 +55,10 @@ export const test = base.extend<TestFixture>({
 
   registerPage: async ({ page }, use) => {
     await use(new RegisterPage(page));
+  },
+
+  passwordPage: async ({ page }, use) => {
+    await use(new PasswordPage(page));
   },
 
   resetPasswordPage: async ({ page }, use) => {

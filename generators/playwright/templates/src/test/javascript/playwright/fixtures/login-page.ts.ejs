@@ -39,15 +39,15 @@ export class LoginPage {
   }
 
   getUsernameLoginLocator(): Locator {
-    return this.page.locator('[data-cy="username"]');
+    return this.page.locator('#username');
   }
 
   getPasswordLoginLocator(): Locator {
-    return this.page.locator('[data-cy="password"]');
+    return this.page.locator('#password');
   }
 
   getSubmitLoginLocator() {
-    return this.page.locator('[data-cy="submit"]');
+    return this.page.locator('[type="submit"]');
   }
 
   getErrorLoginLocator(): Locator {

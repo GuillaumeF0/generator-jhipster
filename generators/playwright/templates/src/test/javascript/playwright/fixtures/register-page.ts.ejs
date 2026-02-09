@@ -22,22 +22,22 @@ export class RegisterPage {
   constructor(public readonly page: Page) {}
 
   getUsernameRegisterLocator(): Locator {
-    return this.page.locator('[data-cy="username"]');
+    return this.page.locator('#login');
   }
 
   getEmailRegisterLocator(): Locator {
-    return this.page.locator('[data-cy="email"]');
+    return this.page.locator('#email');
   }
 
   getFirstPasswordRegisterLocator(): Locator {
-    return this.page.locator('[data-cy="firstPassword"]');
+    return this.page.locator('#password');
   }
 
   getSecondPasswordRegisterLocator(): Locator {
-    return this.page.locator('[data-cy="secondPassword"]');
+    return this.page.locator('#confirmPassword');
   }
 
   getSubmitRegisterLocator(): Locator {
-    return this.page.locator('[data-cy="submit"]');
+    return this.page.locator('[type="submit"]');
   }
 }

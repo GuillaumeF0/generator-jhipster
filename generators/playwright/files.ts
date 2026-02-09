@@ -42,6 +42,7 @@ export const playwrightFiles = asWriteFilesSection({
         'fixtures/test.ts',
         'fixtures/administration-page.ts',
         'fixtures/login-page.ts',
+        'fixtures/password-page.ts',
         'fixtures/register-page.ts',
         'fixtures/reset-password-page.ts',
         'fixtures/navbar.ts',

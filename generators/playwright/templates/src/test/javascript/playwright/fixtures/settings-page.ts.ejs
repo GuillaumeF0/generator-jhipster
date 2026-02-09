@@ -22,18 +22,18 @@ export class SettingsPage {
   constructor(public readonly page: Page) {}
 
   getFirstNameSettingsLocator(): Locator {
-    return this.page.locator('[data-cy="firstname"]');
+    return this.page.locator('#firstname');
   }
 
   getLastNameSettingsLocator(): Locator {
-    return this.page.locator('[data-cy="lastname"]');
+    return this.page.locator('#lastname');
   }
 
   getEmailSettingsLocator(): Locator {
-    return this.page.locator('[data-cy="email"]');
+    return this.page.locator('#email');
   }
 
   getSubmitSettingsLocator(): Locator {
-    return this.page.locator('[data-cy="submit"]');
+    return this.page.locator('[type="submit"]');
   }
 }
