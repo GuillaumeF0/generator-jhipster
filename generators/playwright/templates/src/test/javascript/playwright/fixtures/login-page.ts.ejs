@@ -21,19 +21,6 @@ import { Locator, Page, expect } from '@playwright/test';
 export class LoginPage {
   constructor(public readonly page: Page) {}
 
-  async login(username: string, password: string) {
-    const authenticateResponse = this.page.waitForResponse(
-      response => response.request().method() === 'POST' && response.url().endsWith('/api/authenticate'),
-    );
-    await expect(this.getUsernameLoginLocator()).toBeVisible();
-    await this.getUsernameLoginLocator().fill(username);
-    await expect(this.getPasswordLoginLocator()).toBeVisible();
-    await this.getPasswordLoginLocator().fill(password);
-    await this.getSubmitLoginLocator().click();
-    expect((await authenticateResponse).status()).toEqual(200);
-    await expect(this.page).toHaveURL(url => url.hash === '');
-  }
-
   getTitleLoginLocator(): Locator {
     return this.page.locator('[data-cy="loginTitle"]');
   }

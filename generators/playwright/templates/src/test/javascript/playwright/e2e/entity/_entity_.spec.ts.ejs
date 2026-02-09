@@ -70,16 +70,14 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
   it.beforeEach(async ({ request }) => {
   <%_ for (otherEntity of requiredOtherEntities) { _%>
     // TODO: translate
-    /*
     // create an instance at the required relationship entity:
-    cy.authenticatedRequest({
-      method: 'POST',
-      url: '/<%= baseApi + otherEntity.entityApiUrl %>',
-      body: <%- JSON.stringify(this.generateTestEntity(otherEntity.fields.filter(f => !f.autoGenerate))) %>,
-    }).then(({ body }) => {
-      <%= otherEntity.entityInstance %> = body;
-    });
-    */
+    // cy.authenticatedRequest({
+    //   method: 'POST',
+    //   url: '/<%= baseApi + otherEntity.entityApiUrl %>',
+    //   body: <%- JSON.stringify(this.generateTestEntity(otherEntity.fields.filter(f => !f.autoGenerate))) %>,
+    // }).then(({ body }) => {
+    //   <%= otherEntity.entityInstance %> = body;
+    // });
   <%_ } _%>
   });
 
@@ -87,12 +85,10 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
     // Simulate relationships api for better performance and reproducibility.
   <%_ for (otherEntity of otherEntities) { _%>
     // TODO: translate
-    /*
-    cy.intercept('GET', '/<%= baseApi + otherEntity.entityApiUrl %>', {
-      statusCode: 200,
-      body: [<%= requiredOtherEntities.includes(otherEntity) ? otherEntity.entityInstance : '' %>],
-    });
-    */
+    // cy.intercept('GET', '/<%= baseApi + otherEntity.entityApiUrl %>', {
+    //   statusCode: 200,
+    //   body: [<%= requiredOtherEntities.includes(otherEntity) ? otherEntity.entityInstance : '' %>],
+    // });
 
   <%_ } _%>
   });
@@ -119,14 +115,12 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
   <%_ for (otherEntity of requiredOtherEntities) { _%>
     if (<%= otherEntity.entityInstance %>) {
       // TODO: translate
-      /*
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/<%= baseApi + otherEntity.entityApiUrl %>/${<%= otherEntity.entityInstance %>.<%= otherEntity.primaryKey.name %>}`,
-      }).then(() => {
-        <%= otherEntity.entityInstance %> = undefined;
-      });
-      */
+      // cy.authenticatedRequest({
+      //   method: 'DELETE',
+      //   url: `/<%= baseApi + otherEntity.entityApiUrl %>/${<%= otherEntity.entityInstance %>.<%= otherEntity.primaryKey.name %>}`,
+      // }).then(() => {
+      //   <%= otherEntity.entityInstance %> = undefined;
+      // });
     }
   <%_ } _%>
   });
@@ -327,7 +321,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
   it.describe('new <%- entityNameCapitalized %> page', () => {
     it.beforeEach(async ({ page }) => {
       await page.goto(<%= entityInstance %>PageUrl);
-      await page.getByRole('button', { name: 'Create a new Authority' }).click();
+      await page.getByRole('button', { name: 'Create a new <%- entityNameCapitalized %>' }).click();
       await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameCapitalized %>' })).toBeVisible();
     });
 
@@ -385,7 +379,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
-      authority = await (await postEntityRequest).json();
+      <%= entityInstance %> = await (await postEntityRequest).json();
 
       expect((await postEntityRequest).status()).toEqual(201);
       expect((await entitiesRequest).status()).toEqual(200);
