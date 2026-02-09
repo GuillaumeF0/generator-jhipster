@@ -146,7 +146,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
     */
     //
     const entitiesRequest = page.waitForResponse(
-      response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
+      response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
     );
     await page.getByRole('link', { name: '<%- adminEntity ? 'Administration' : 'Entities' %>' }).click();
     await page.getByRole('link', { name: '<%- entityNameCapitalized %>' }).click();
@@ -165,7 +165,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
     it.describe('create button click', () => {
       it.beforeEach(async ({ page }) => {
         const entitiesRequest = page.waitForResponse(
-          response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
+          response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
         await page.goto(<%= entityInstance %>PageUrl);
         expect((await entitiesRequest).ok()).toBeTruthy();
@@ -178,7 +178,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
         expect(page.url()).toMatch(new RegExp('.*/<%= entityPage %>/new$'));
 
         const entitiesRequest = page.waitForResponse(
-          response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
+          response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
         await page.getByRole('button', { name: 'Cancel' }).click();
@@ -208,7 +208,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
   <%_ } _%>
         });
         const entitiesRequest = page.waitForResponse(
-          response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>')
+          response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>')
   <%_ if (!paginationNo) { _%>
             && response.headers().link === '<http://localhost/<%= baseApi + entityApiUrl %>?page=0&size=20>; rel="last",<http://localhost/<%= baseApi + entityApiUrl %>?page=0&size=20>; rel="first"',
   <%_ } _%>
@@ -244,7 +244,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
         await expect(page.getByRole('heading', { name: '<%- entityNamePlural %>' })).toBeVisible();
 
         const entitiesRequest = page.waitForResponse(
-          response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
+          response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
         await page.getByRole('button', { name: 'Back' }).click();
@@ -260,7 +260,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
         await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
         
         const entitiesRequest = page.waitForResponse(
-          response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
+          response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
         
         await page.getByRole('button', { name: 'Back' }).click();
@@ -274,7 +274,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
         await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameCapitalized %>' })).toBeVisible();
        
         const entitiesRequest = page.waitForResponse(
-          response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
+          response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
         await page.getByRole('button', { name: 'Save' }).click();
@@ -301,7 +301,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
           response => response.request().method() === 'DELETE' && response.url().includes('/<%= baseApi + entityApiUrl %>/'),
         );
         const entitiesRequest = page.waitForResponse(
-          response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
+          response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
         await page.getByRole('button', { name: 'Delete' }).click();
@@ -375,7 +375,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
         response => response.request().method() === 'POST' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
       );
       const entitiesRequest = page.waitForResponse(
-        response => response.request().method() === 'GET' && response.url().endsWith('/<%= baseApi + entityApiUrl %>'),
+        response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
