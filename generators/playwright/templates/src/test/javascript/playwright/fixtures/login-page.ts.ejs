@@ -26,22 +26,27 @@ export class LoginPage {
   }
 
   getUsernameLoginLocator(): Locator {
-    return this.page.locator('#username');
+    // return this.page.locator('#username');
+    return this.page.getByRole('textbox', { name: __jhiTransformTranslateStringify__('global.form.username.label') });
   }
 
   getPasswordLoginLocator(): Locator {
-    return this.page.locator('#password');
+    // return this.page.locator('#password');
+    return this.page.getByRole('textbox', { name: __jhiTransformTranslateStringify__('login.form.password') });
   }
 
   getSubmitLoginLocator() {
-    return this.page.locator('[type="submit"]');
+    return this.page.getByRole('button', { name: __jhiTransformTranslateStringify__('login.form.button') });
   }
 
   getErrorLoginLocator(): Locator {
-    return this.page.locator('[data-cy="loginError"]');
+    // return this.page.locator('[data-cy="loginError"]');
+    // TODO: suppress HTML
+    return this.page.page.getByText(__jhiTransformTranslateStringify__('login.messages.error.authentication'));
   }
 
   getForgetYourPasswordLocator(): Locator {
-    return this.page.locator('[data-cy="forgetYourPasswordSelector"]');
+    // return this.page.locator('[data-cy="forgetYourPasswordSelector"]');
+    return this.page.getByRole('link', { name: __jhiTransformTranslateStringify__('login.password.forgot') });
   }
 }

@@ -75,48 +75,48 @@ it.describe('/admin', () => {
         });
 
         it('detail button click should load details User page', async ({ page }) => {
-          await page.getByRole('button', { name: 'View' }).last().click();
+          await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.view') }).last().click();
           await expect(page.getByRole('heading')).toBeVisible();
 
           const entitiesRequest = page.waitForResponse(
             response => response.request().method() === 'GET' && response.url().endsWith('/api/admin/users+(?*|)'),
           );
 
-          await page.getByRole('button', { name: 'Back' }).click();
+          await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.back') }).click();
           expect((await entitiesRequest).status()).toEqual(200);
           expect(page.url()).toMatch(userManagementPageUrlPattern);
         });
 
         it('edit button click should load edit User page and go back', async ({ page }) => {
-          await page.getByRole('button', { name: 'Edit' }).last().click();
-          await expect(page.getByRole('heading', { name: 'Create or edit a user' })).toBeVisible();
-          await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
+          await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.edit') }).last().click();
+          await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('userManagement.home.createOrEditLabel') })).toBeVisible();
+          await expect(page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.save') })).toBeVisible();
 
           const entitiesRequest = page.waitForResponse(
             response => response.request().method() === 'GET' && response.url().endsWith('/api/admin/users+(?*|)'),
           );
 
-          await page.getByRole('button', { name: 'Cancel' }).click();
+          await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.cancel') }).click();
           expect((await entitiesRequest).status()).toEqual(200);
           expect(page.url()).toMatch(userManagementPageUrlPattern);
         });
 
         it('edit button click should load edit User page and save', async ({ page }) => {
-          await page.getByRole('button', { name: 'Edit' }).last().click();
-          await expect(page.getByRole('heading', { name: 'Create or edit a user' })).toBeVisible();
+          await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.edit') }).last().click();
+          await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('userManagement.home.createOrEditLabel') })).toBeVisible();
 
           const entitiesRequest = page.waitForResponse(
             response => response.request().method() === 'GET' && response.url().endsWith('/api/admin/users+(?*|)'),
           );
 
-          await page.getByRole('button', { name: 'Save' }).click();
+          await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.save') }).click();
           expect((await entitiesRequest).status()).toEqual(200);
           expect(page.url()).toMatch(userManagementPageUrlPattern);
         });
 
         it('last delete button click should delete instance of User', async ({ page }) => {
-          await page.getByRole('button', { name: 'Delete' }).last().click();
-          await expect(page.getByRole('heading', { name: 'Confirm delete operation' })).toBeVisible();
+          await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.delete') }).last().click();
+          await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('entity.delete.title') })).toBeVisible();
 
           const deleteEntityRequest = page.waitForResponse(
             response => response.request().method() === 'DELETE' && response.url().endsWith('/api/admin/users/*'),
@@ -126,7 +126,7 @@ it.describe('/admin', () => {
             response => response.request().method() === 'GET' && response.url().endsWith('/api/admin/users+(?*|)'),
           );
 
-          await page.getByRole('button', { name: 'Delete' }).last().click();
+          await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.delete') }).last().click();
           expect((await deleteEntityRequest).status()).toEqual(204);
           expect((await entitiesRequest).status()).toEqual(200);
           expect(page.url()).toMatch(userManagementPageUrlPattern);
@@ -143,7 +143,7 @@ it.describe('/admin', () => {
     it('should load the page', async ({ page, navbar }) => {
       navbar.getAdminMenuLocator().click();
       navbar.getAdminMenuItemLocator('metrics').click();
-      await expect(page.getByRole('heading', { name: 'Application Metrics' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('metrics.title') })).toBeVisible();
     });
   });
 
@@ -151,7 +151,7 @@ it.describe('/admin', () => {
     it('should load the page', async ({ page, navbar }) => {
       navbar.getAdminMenuLocator().click();
       navbar.getAdminMenuItemLocator('health').click();
-      await expect(page.getByRole('heading', { name: 'Health Checks' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('health.title') })).toBeVisible();
     });
   });
 
@@ -159,7 +159,7 @@ it.describe('/admin', () => {
     it('should load the page', async ({ page, navbar }) => {
       navbar.getAdminMenuLocator().click();
       navbar.getAdminMenuItemLocator('logs').click();
-      await expect(page.getByRole('heading', { name: 'Logs' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('logs.title') })).toBeVisible();
     });
   });
 
@@ -167,7 +167,7 @@ it.describe('/admin', () => {
     it('should load the page', async ({ page, navbar }) => {
       navbar.getAdminMenuLocator().click();
       navbar.getAdminMenuItemLocator('configuration').click();
-      await expect(page.getByRole('heading', { name: 'Configuration', exact: true })).toBeVisible();
+      await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('configuration.title'), exact: true })).toBeVisible();
     });
   });
 <%_ } _%>

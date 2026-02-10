@@ -148,15 +148,15 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
     const entitiesRequest = page.waitForResponse(
       response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
     );
-    await page.getByRole('link', { name: '<%- adminEntity ? 'Administration' : 'Entities' %>' }).click();
-    await page.getByRole('link', { name: '<%- entityNameHumanized %>' }).click();
+    await page.getByRole('link', { name: __jhiTransformTranslateStringify__('global.menu.<%- adminEntity ? 'admin' : 'entities' %>.main') }).click();
+    await page.getByRole('link', { name: __jhiTransformTranslateStringify__('global.menu.entities.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>') }).click();
     const entities = await (await entitiesRequest).json();
     if (entities?.length === 0) {
       await expect(page.locator('[data-cy="entityTable"]')).not.toBeVisible();
     } else {
       expect(await page.locator('[data-cy="entityTable"]').count()).toBeGreaterThan(0);
     }
-    await expect(page.getByRole('heading', { name: '<%- entityNamePluralHumanized %>' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.title') })).toBeVisible();
     expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
   });
 
@@ -172,16 +172,16 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       });
 
       it('should load create <%- entityNameCapitalized %> page', async ({ page }) => {
-        await page.getByRole('button', { name: 'Create a new <%- entityNameHumanized %>' }).click();
-        await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameHumanized %>' })).toBeVisible();
-        await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
+        await page.getByRole('button', { name: __jhiTransformTranslateStringify__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.createLabel') }).click();
+        await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('jhipsterTest2App.<%= entityInstance %>.home.createOrEditLabel') })).toBeVisible();
+        await expect(page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.save') })).toBeVisible();
         expect(page.url()).toMatch(new RegExp('.*/<%= entityPage %>/new$'));
 
         const entitiesRequest = page.waitForResponse(
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
-        await page.getByRole('button', { name: 'Cancel' }).click();
+        await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.cancel') }).click();
         expect((await entitiesRequest).ok()).toBeTruthy();
         expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
       });
@@ -252,13 +252,13 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
 
       it('detail button click should load details <%- entityNameCapitalized %> page', async ({ page }) => {
         await page.locator('[data-cy="entityDetailsButton"]').first().click();
-        await expect(page.getByRole('heading', { name: '<%- entityNamePluralHumanized %>' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.title') })).toBeVisible();
 
         const entitiesRequest = page.waitForResponse(
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
-        await page.getByRole('button', { name: 'Back' }).click();
+        await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.back') }).click();
 
         expect((await entitiesRequest).ok()).toBeTruthy();
         expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
@@ -267,14 +267,14 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
 <%_ if (!readOnly && updatableEntity) { _%>
       it('edit button click should load edit <%- entityNameCapitalized %> page and go back', async ({ page }) => {
         await page.locator('[data-cy="entityEditButton"]').first().click();
-        await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameHumanized %>' })).toBeVisible();
-        await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('jhipsterTest2App.<%= entityInstance %>.home.createOrEditLabel') })).toBeVisible();
+        await expect(page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.save') })).toBeVisible();
         
         const entitiesRequest = page.waitForResponse(
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
         
-        await page.getByRole('button', { name: 'Cancel' }).click();
+        await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.cancel') }).click();
         expect((await entitiesRequest).status()).toEqual(200);
         expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
       });
@@ -282,13 +282,13 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       <% if (jpaMetamodelFiltering && clientFrameworkVue && requiredRelationships.length) { %>// Reason: jpaMetamodelFiltering with required relationship missbehavior<% } %>
       it<% if (jpaMetamodelFiltering && clientFrameworkVue && requiredRelationships.length) { %>.skip<% } %>('edit button click should load edit <%- entityNameCapitalized %> page and save', async ({ page }) => {
         await page.locator('[data-cy="entityEditButton"]').first().click();
-        await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameHumanized %>' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('jhipsterTest2App.<%= entityInstance %>.home.createOrEditLabel') })).toBeVisible();
        
         const entitiesRequest = page.waitForResponse(
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
-        await page.getByRole('button', { name: 'Save' }).click();
+        await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.save') }).click();
         expect((await entitiesRequest).status()).toEqual(200);
         expect(page.url()).toMatch(<%= entityInstance %>PageUrlPattern);
       });
@@ -306,7 +306,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
   <%_ if (clientFrameworkReact) { _%>
         expect((await dialogDeleteRequest).ok()).toBeTruthy();
   <%_ } _%>
-        await expect(page.getByRole('heading', { name: 'Confirm delete operation' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('entity.delete.title') })).toBeVisible();
 
         const deleteEntityRequest = page.waitForResponse(
           response => response.request().method() === 'DELETE' && response.url().includes('/<%= baseApi + entityApiUrl %>/'),
@@ -315,7 +315,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
         );
 
-        await page.getByRole('button', { name: 'Delete' }).click();
+        await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.delete') }).click();
 
         expect((await deleteEntityRequest).status()).toEqual(204);
         expect((await entitiesRequest).status()).toEqual(200);
@@ -332,8 +332,8 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
   it.describe('new <%- entityNameCapitalized %> page', () => {
     it.beforeEach(async ({ page }) => {
       await page.goto(<%= entityInstance %>PageUrl);
-      await page.getByRole('button', { name: 'Create a new <%- entityNameHumanized %>' }).click();
-      await expect(page.getByRole('heading', { name: 'Create or edit a <%- entityNameHumanized %>' })).toBeVisible();
+      await page.getByRole('button', { name: __jhiTransformTranslateStringify__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.createLabel') }).click();
+      await expect(page.getByRole('heading', { name: __jhiTransformTranslateStringify__('jhipsterTest2App.<%= entityInstance %>.home.createOrEditLabel') })).toBeVisible();
     });
 
     <% if (skipCreateTest) { %>// Reason: cannot create a required entity with relationship with required relationships.<% } %>
@@ -393,7 +393,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
         response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
       );
 
-      await page.getByRole('button', { name: 'Save' }).click();
+      await page.getByRole('button', { name: __jhiTransformTranslateStringify__('entity.action.save') }).click();
       <%= entityInstance %> = await (await postEntityRequest).json();
 
       expect((await postEntityRequest).status()).toEqual(201);
