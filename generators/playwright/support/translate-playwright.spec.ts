@@ -23,287 +23,54 @@ import type { GetWebappTranslationCallback } from '../../client/translation';
 
 import { createTranslationReplacer } from './translate-playwright.ts';
 
-describe('generator - angular - transform', () => {
-  describe('replaceAngularTranslations', () => {
-    let replaceAngularTranslations: ReturnType<typeof createTranslationReplacer>;
-    let enabledAngularTranslations: ReturnType<typeof createTranslationReplacer>;
+describe('generator - playwright - transform', () => {
+  describe('replacePlaywightTranslations', () => {
+    let replacePlaywrightTranslations: ReturnType<typeof createTranslationReplacer>;
 
     beforeEach(() => {
       let value = 0;
-      const testImpl: GetWebappTranslationCallback = (key, data) =>
-        key === 'blank' ? '' : `translated-value-${key}-${data ? `${inspect(data)}-` : ''}${value++}`;
-      replaceAngularTranslations = createTranslationReplacer(esmocha.fn<GetWebappTranslationCallback>().mockImplementation(testImpl), {
-        jhiPrefix: 'jhi',
-        enableTranslation: false,
-      });
-      enabledAngularTranslations = createTranslationReplacer(esmocha.fn<GetWebappTranslationCallback>().mockImplementation(testImpl), {
-        jhiPrefix: 'jhi',
-        enableTranslation: true,
+      const testImpl: GetWebappTranslationCallback = (key, data) => {
+        switch (key) {
+          case 'blank':
+            return '';
+          case 'html':
+            return '<html> inside html tag! </html> outise html tag';
+          default:
+            return `translated-value-${key}-${data ? `${inspect(data)}-` : ''}${value++}`;
+        }
+      };
+      replacePlaywrightTranslations = createTranslationReplacer(esmocha.fn<GetWebappTranslationCallback>().mockImplementation(testImpl));
+    });
+
+    describe('.ts files', () => {
+      const extension = '.ts';
+
+      it('should translate __jhiTransformTranslateRemoveHtml__ function', () => {
+        const body = `
+title: __jhiTransformTranslateRemoveHtml__('activate.title1'),
+title: __jhiTransformTranslateRemoveHtml__('activate.title2'),
+`;
+        expect(replacePlaywrightTranslations(body, extension)).toMatchInlineSnapshot(`
+"
+title: 'translated-value-activate.title1-0',
+title: 'translated-value-activate.title2-1',
+"
+`);
       });
     });
 
-    describe('with translation disabled', () => {
-      describe('.html files', () => {
-        const extension = '.html';
+    describe('.ts files', () => {
+      const extension = '.ts';
 
-        it('should translate __jhiTransformTranslate__ function', () => {
-          const body = `
-<h1>__jhiTransformTranslate__('activate.title1')</h1>
-<h1>__jhiTransformTranslate__('activate.title2')</h1>
+      it('should translate __jhiTransformTranslateRemoveHtml__ function', () => {
+        const body = `
+title: __jhiTransformTranslateRemoveHtml__('html'),
 `;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
+        expect(replacePlaywrightTranslations(body, extension)).toMatchInlineSnapshot(`
 "
-<h1>translated-value-activate.title1-1</h1>
-<h1>translated-value-activate.title2-0</h1>
+title:  inside html tag!  outise html tag
 "
 `);
-        });
-
-        it('should remove jhiTranslate attribute', () => {
-          const body = `
-<h1 jhiTranslate="activate.title1">activate.title1</h1>
-<h1 jhiTranslate="activate.title2">activate.title2</h1>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<h1>activate.title1</h1>
-<h1>activate.title2</h1>
-"
-`);
-        });
-
-        it('should remove [translateValues] attribute', () => {
-          const body = `
-<h1 [translateValues]="{ max: 50 }">translate-values1</h1>
-<h1 [translateValues]="{ max: 50 }">translate-values2</h1>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<h1>translate-values1</h1>
-<h1>translate-values2</h1>
-"
-`);
-        });
-
-        it('should remove nested [translateValues] attribute', () => {
-          const body = `
-<h1 [translateValues]="{ max: 50 }"><span [translateValues]="{ max: 50 }">translate-values1</span></h1>
-<h1 [translateValues]="{ max: 50 }"><span [translateValues]="{ max: 50 }">translate-values2</span></h1>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<h1><span>translate-values1</span></h1>
-<h1><span>translate-values2</span></h1>
-"
-`);
-        });
-
-        it('should remove [translateValues] attribute with any character', () => {
-          const body = `
-<h1 [translateValues]="{  %79kma#@ }">translate-values1</h1>
-<h1 [translateValues]="{  %79kma#@ }">translate-values2</h1>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<h1>translate-values1</h1>
-<h1>translate-values2</h1>
-"
-`);
-        });
-
-        it('should remove nested [translateValues] attribute', () => {
-          const body = `
-<h1 [translateValues]="{ max: 50 }"><span [translateValues]="{ max: 50 }">translate-values1</span></h1>
-<h1 [translateValues]="{ max: 20 }"><span [translateValues]="{ max: 20 }">translate-values2</span></h1>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<h1><span>translate-values1</span></h1>
-<h1><span>translate-values2</span></h1>
-"
-`);
-        });
-
-        it('should replace placeholder attribute value with translated value', () => {
-          const body = `
-<input placeholder="{{ 'global.form.currentpassword.placeholder1' | translate }}"/>
-<input placeholder="{{ 'global.form.currentpassword.placeholder2' | translate }}"/>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<input placeholder="translated-value-global.form.currentpassword.placeholder1-0"/>
-<input placeholder="translated-value-global.form.currentpassword.placeholder2-1"/>
-"
-`);
-        });
-
-        it('should replace title attribute value with translated value', () => {
-          const body = `
-<input title="{{ 'global.form.currentpassword.title1' | translate }}"/>
-<input title="{{ 'global.form.currentpassword.title2' | translate }}"/>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<input title="translated-value-global.form.currentpassword.title1-0"/>
-<input title="translated-value-global.form.currentpassword.title2-1"/>
-"
-`);
-        });
-
-        it('should replace __jhiTranslatePipe__ with translated value', () => {
-          const body = `
-<input title="__jhiTranslatePipe__('global.form.currentpassword.title1')"/>
-<input title="__jhiTranslatePipe__('global.form.currentpassword.title2')"/>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<input title="translated-value-global.form.currentpassword.title1-1"/>
-<input title="translated-value-global.form.currentpassword.title2-0"/>
-"
-`);
-        });
-
-        it('should replace __jhiTranslatePipe__ with translation pipe', () => {
-          const body = `
-<input title="__jhiTranslatePipe__('global.form.currentpassword.title1')"/>
-<input title="__jhiTranslatePipe__('global.form.currentpassword.title2')"/>
-`;
-          expect(enabledAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<input title="{{ 'global.form.currentpassword.title1' | translate }}"/>
-<input title="{{ 'global.form.currentpassword.title2' | translate }}"/>
-"
-`);
-        });
-
-        it('should replace __jhiTranslateTag__ with translated value', () => {
-          const body = `
-<tag>__jhiTranslateTag__('global.form.currentpassword.title1', { "username": "account()!.login" })</tag>
-<tag>
-__jhiTranslateTag__('global.form.currentpassword.title2')
-</tag>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<tag>translated-value-global.form.currentpassword.title1-{ username: &apos;{{ account()!.login }}&apos; }-1</tag>
-<tag>
-translated-value-global.form.currentpassword.title2-0
-</tag>
-"
-`);
-        });
-
-        it('should replace __jhiTranslateTag__ with empty translated value', () => {
-          const body = `<tag>__jhiTranslateTag__('blank', { "username": "account()!.login" })</tag>`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`"<tag></tag>"`);
-        });
-
-        it('should replace __jhiTranslateTag__ with translation attribute and value', () => {
-          const body = `
-<tag>__jhiTranslateTag__('global.form.currentpassword.title1', { "username": "account()!.login" })</tag>
-<tag>
-__jhiTranslateTag__('global.form.currentpassword.title2')
-</tag>
-`;
-          expect(enabledAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<tag jhiTranslate="global.form.currentpassword.title1" [translateValues]="{ username: account()!.login }">translated-value-global.form.currentpassword.title1-{ username: &apos;{{ account()!.login }}&apos; }-1</tag>
-<tag jhiTranslate="global.form.currentpassword.title2">
-translated-value-global.form.currentpassword.title2-0
-</tag>
-"
-`);
-        });
-
-        it('should replace __jhiTranslateTagPipe__ with translated value', () => {
-          const body = `
-<tag>__jhiTranslateTagPipe__('global.form.currentpassword.title1', { "username": "translation.key" })</tag>
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<tag>translated-value-global.form.currentpassword.title1-{ username: &apos;translated-value-translation.key-0&apos; }-1</tag>
-"
-`);
-        });
-
-        it('should replace __jhiTranslateTagPipe__ with translation attribute and value', () => {
-          const body = `
-<tag>__jhiTranslateTagPipe__('global.form.currentpassword.title1', { "username": "translation.key" })</tag>
-`;
-          expect(enabledAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-<tag jhiTranslate="global.form.currentpassword.title1" [translateValues]="{ username: ('translation.key' | translate) }">translated-value-global.form.currentpassword.title1-{ username: &apos;translated-value-translation.key-0&apos; }-1</tag>
-"
-`);
-        });
-      });
-
-      describe('.route.ts files', () => {
-        const extension = '.route.ts';
-
-        it('should translate title fields with translation values', () => {
-          const body = `
-title: 'activate.title1',
-title: 'activate.title2',
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-title: 'translated-value-activate.title1-0',
-title: 'translated-value-activate.title2-1',
-"
-`);
-        });
-      });
-
-      describe('.routes.ts files', () => {
-        const extension = '.routes.ts';
-
-        it('should translate title fields with translation values', () => {
-          const body = `
-title: 'activate.title1',
-title: 'activate.title2',
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-title: 'translated-value-activate.title1-0',
-title: 'translated-value-activate.title2-1',
-"
-`);
-        });
-      });
-
-      describe('.module.ts files', () => {
-        const extension = '.module.ts';
-
-        it('should translate title fields with translation values', () => {
-          const body = `
-title: 'activate.title1',
-title: 'activate.title2',
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-title: 'translated-value-activate.title1-0',
-title: 'translated-value-activate.title2-1',
-"
-`);
-        });
-      });
-
-      describe('.error.route.ts files', () => {
-        const extension = '.error.route.ts';
-
-        it('should translate pageTitle fields with translation values', () => {
-          const body = `
-errorMessage: 'activate.title1',
-errorMessage: 'activate.title2',
-`;
-          expect(replaceAngularTranslations(body, extension)).toMatchInlineSnapshot(`
-"
-errorMessage: 'translated-value-activate.title1-0',
-errorMessage: 'translated-value-activate.title2-1',
-"
-`);
-        });
       });
     });
   });
