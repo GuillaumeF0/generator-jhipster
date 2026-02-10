@@ -27,26 +27,25 @@ export class LoginPage {
 
   getUsernameLoginLocator(): Locator {
     // return this.page.locator('#username');
-    return this.page.getByRole('textbox', { name: __jhiTransformTranslateStringify__('global.form.username.label') });
+    return this.page.getByRole('textbox', { name: __jhiTransformTranslateRemoveHtml__('global.form.username.label') });
   }
 
   getPasswordLoginLocator(): Locator {
     // return this.page.locator('#password');
-    return this.page.getByRole('textbox', { name: __jhiTransformTranslateStringify__('login.form.password') });
+    return this.page.getByRole('textbox', { name: __jhiTransformTranslateRemoveHtml__('login.form.password') });
   }
 
   getSubmitLoginLocator() {
-    return this.page.getByRole('button', { name: __jhiTransformTranslateStringify__('login.form.button') });
+    return this.page.getByRole('button', { name: __jhiTransformTranslateRemoveHtml__('login.form.button') });
   }
 
   getErrorLoginLocator(): Locator {
     // return this.page.locator('[data-cy="loginError"]');
-    // TODO: suppress HTML
-    return this.page.page.getByText(__jhiTransformTranslateStringify__('login.messages.error.authentication'));
+    return this.page.getByText(__jhiTransformTranslateRemoveHtml__('login.messages.error.authentication'));
   }
 
   getForgetYourPasswordLocator(): Locator {
     // return this.page.locator('[data-cy="forgetYourPasswordSelector"]');
-    return this.page.getByRole('link', { name: __jhiTransformTranslateStringify__('login.password.forgot') });
+    return this.page.getByRole('link', { name: __jhiTransformTranslateRemoveHtml__('login.password.forgot') });
   }
 }

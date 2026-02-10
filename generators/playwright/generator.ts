@@ -18,6 +18,7 @@
  */
 
 // import { clientFrameworkTypes } from '../../lib/jhipster/index.ts';
+import { isFileStateModified } from 'mem-fs-editor/state';
 import { mutateData, stringHashCode } from '../../lib/utils/index.ts';
 import BaseApplicationGenerator from '../base-application/index.ts';
 import { createFaker } from '../base-application/support/index.ts';
@@ -28,6 +29,7 @@ import type { Source as JavaSource } from '../java/types.d.ts';
 
 import { playwrightEntityFiles, playwrightFiles } from './files.ts';
 import type { Application as PlaywrightApplication, Entity as PlaywrightEntity, Field as PlaywrightField } from './types.ts';
+import { isTranslatedPlaywrightFile, translatePlaywrightFilesTransform } from './support/index.ts';
 
 // const { ANGULAR } = clientFrameworkTypes;
 
@@ -162,6 +164,25 @@ export default class PlaywrightGenerator extends BaseApplicationGenerator<Playwr
 
   get [BaseApplicationGenerator.POST_PREPARING_EACH_ENTITY]() {
     return this.delegateTasksToBlueprint(() => this.postPreparingEachEntity);
+  }
+
+  get default() {
+    return this.asDefaultTaskGroup({
+      queueTranslateTransform({ application }) {
+        this.queueTransformStream(
+          {
+            name: 'translating playwright test',
+            filter: file => isFileStateModified(file) && file.path.startsWith(this.destinationPath()) && isTranslatedPlaywrightFile(file),
+            refresh: false,
+          },
+          translatePlaywrightFilesTransform(application.getWebappTranslation!),
+        );
+      },
+    });
+  }
+
+  get [BaseApplicationGenerator.DEFAULT]() {
+    return this.delegateTasksToBlueprint(() => this.default);
   }
 
   get writing() {
