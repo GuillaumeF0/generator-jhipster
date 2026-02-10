@@ -173,7 +173,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
 
       it('should load create <%- entityNameCapitalized %> page', async ({ page }) => {
         await page.getByRole('button', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.createLabel') }).click();
-        await expect(page.getByRole('heading', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%= entityInstance %>.home.createOrEditLabel') })).toBeVisible();
+        await expect(page.getByRole('heading', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.createOrEditLabel') })).toBeVisible();
         await expect(page.getByRole('button', { name: __jhiTransformTranslateRemoveHtml__('entity.action.save') })).toBeVisible();
         expect(page.url()).toMatch(new RegExp('.*/<%= entityPage %>/new$'));
 
@@ -267,7 +267,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
 <%_ if (!readOnly && updatableEntity) { _%>
       it('edit button click should load edit <%- entityNameCapitalized %> page and go back', async ({ page }) => {
         await page.locator('[data-cy="entityEditButton"]').first().click();
-        await expect(page.getByRole('heading', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%= entityInstance %>.home.createOrEditLabel') })).toBeVisible();
+        await expect(page.getByRole('heading', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.createOrEditLabel') })).toBeVisible();
         await expect(page.getByRole('button', { name: __jhiTransformTranslateRemoveHtml__('entity.action.save') })).toBeVisible();
         
         const entitiesRequest = page.waitForResponse(
@@ -282,7 +282,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       <% if (jpaMetamodelFiltering && clientFrameworkVue && requiredRelationships.length) { %>// Reason: jpaMetamodelFiltering with required relationship missbehavior<% } %>
       it<% if (jpaMetamodelFiltering && clientFrameworkVue && requiredRelationships.length) { %>.skip<% } %>('edit button click should load edit <%- entityNameCapitalized %> page and save', async ({ page }) => {
         await page.locator('[data-cy="entityEditButton"]').first().click();
-        await expect(page.getByRole('heading', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%= entityInstance %>.home.createOrEditLabel') })).toBeVisible();
+        await expect(page.getByRole('heading', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.createOrEditLabel') })).toBeVisible();
        
         const entitiesRequest = page.waitForResponse(
           response => response.request().method() === 'GET' && response.url().includes('/<%= baseApi + entityApiUrl %>'),
@@ -333,7 +333,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
     it.beforeEach(async ({ page }) => {
       await page.goto(<%= entityInstance %>PageUrl);
       await page.getByRole('button', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.createLabel') }).click();
-      await expect(page.getByRole('heading', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%= entityInstance %>.home.createOrEditLabel') })).toBeVisible();
+      await expect(page.getByRole('heading', { name: __jhiTransformTranslateRemoveHtml__('jhipsterTest2App.<%- adminEntity ? 'admin' + entityNameCapitalized : entityInstance %>.home.createOrEditLabel') })).toBeVisible();
     });
 
     <% if (skipCreateTest) { %>// Reason: cannot create a required entity with relationship with required relationships.<% } %>
@@ -360,8 +360,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
       */
 
     <%_ } else if (fieldIsEnum) { _%>
-      await page.locator(`[data-cy="<%= fieldName %>"]`).selectOption({ value: <%- fieldValue %> });
-      <%_ } _%>
+      await page.locator(`[data-cy="<%= fieldName %>"]`).selectOption({ value: '<%- fieldValue %>' });
 
     <%_ } else if (field.fieldTypeString || field.fieldTypeNumeric || field.fieldTypeLocalDate || field.fieldTypeTimed || field.fieldTypeDuration) { _%>
       await page.locator(`[data-cy="<%= fieldName %>"]`).fill('<%- fieldValue %>');
@@ -375,7 +374,7 @@ it.describe('<%- entityNameCapitalized %> e2e test', () => {
   <%_ }); _%>
   <%_ for (relationship of requiredRelationships) {
   _%>
-       await page.locator(`[data-cy="<%= relationship.relationshipFieldName %>"]`).selectOption(<%= relationship.collection ? "['0']" : "'1'" %>);
+       await page.locator(`[data-cy="<%= relationship.relationshipFieldName %>"]`).selectOption(<%= relationship.collection ? ['0'] : '1' %>);
   <%_ } _%>
 
   <%_ if (anyFieldHasFileBasedContentType) { _%>
